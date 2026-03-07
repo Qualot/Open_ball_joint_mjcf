@@ -1,0 +1,10 @@
+<mujoco model="socket_0">
+  <default>
+    <default class="visual">
+      <geom group="2" type="mesh" contype="0" conaffinity="0"/>
+    </default>
+    <default class="collision">
+      <geom group="3" type="mesh" friction=".00001 .00001 .00001"/>
+    </default>
+  </default>
+</mujoco>

@@ -1,0 +1,53 @@
+<mujoco model="hip_test">
+  <!-- separation of body and other parts (default, asset) is necessary for including body part in worldbody -->
+  <include file="assets/socket_0/default_socket_0.xml"/>
+  <include file="assets/socket_0/asset_socket_0.xml"/>
+
+  <default>
+    <motor gear="1" ctrllimited="true" ctrlrange="-2000 0"/>
+    <tendon rgba=".6 .2 .2 1"/>
+  </default>
+
+
+  <worldbody>
+      <include file="assets/socket_0/body_socket_0.xml"/>
+        <body name="floating_femur" pos="0 0 0.005">
+          <freejoint/>
+          <include file="assets/femur_0.xml"/>
+        </body>
+  </worldbody>
+
+  <tendon>
+    <spatial name="t0" width=".008">
+      <site site="s0"/>
+      <geom geom="hip_ball" sidesite="x0"/>
+      <site site="s4"/>
+    </spatial>
+    <spatial name="t1" width=".008">
+      <site site="s1"/>
+      <geom geom="hip_ball" sidesite="x1"/>
+      <site site="s5"/>
+    </spatial>
+    <spatial name="t2" width=".008">
+      <site site="s2"/>
+      <geom geom="hip_ball" sidesite="x2"/>
+      <site site="s6"/>
+    </spatial>
+    <spatial name="t3" width=".008">
+      <site site="s3"/>
+      <geom geom="hip_ball" sidesite="x3"/>
+      <site site="s7"/>
+    </spatial>
+  </tendon>
+
+  <actuator>
+    <motor name="m0" tendon="t0"/>
+    <motor name="m1" tendon="t1"/>
+    <motor name="m2" tendon="t2"/>
+    <motor name="m3" tendon="t3"/>
+    <!-- <muscle name="m0" tendon="t0"/>
+    <muscle name="m1" tendon="t1"/>
+    <muscle name="m2" tendon="t2"/>
+    <muscle name="m3" tendon="t3"/> -->
+  </actuator>
+</mujoco>
