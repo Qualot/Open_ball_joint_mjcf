@@ -8,5 +8,5 @@ Installation
 
 Programs
 ```
-$python3 plot_femur.py
+
 ```
