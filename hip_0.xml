@@ -11,7 +11,7 @@
 
   <worldbody>
       <include file="assets/socket_0/body_socket_0.xml"/>
-        <body name="floating_femur" pos="0 0 0.005">
+        <body name="floating_femur" pos="0 0 0">
           <!-- <freejoint/> -->
           <joint name="hip_free" type="free" stiffness="0" damping="0" frictionloss="0" armature="0"/>
           <include file="assets/femur_0.xml"/>
@@ -53,6 +53,6 @@
   </actuator>
 
   <keyframe>
-    <key name="home" qpos="0 0 0.005 1 0 0 0"/>
+    <key name="home" qpos="0 0 0.045 1 0 0 0"/>
   </keyframe>
 </mujoco>

@@ -14,7 +14,7 @@
     </body>
   </worldbody> -->
   <!-- femur body -->
-    <body name="femur" pos="0 0 0.04">
+    <body name="femur" pos="0 0 0">
     <!-- sphere (diameter 80mm) -->
       <geom name="hip_ball"
           type="sphere"
