@@ -50,4 +50,8 @@
     <muscle name="m2" tendon="t2"/>
     <muscle name="m3" tendon="t3"/> -->
   </actuator>
+
+  <keyframe>
+    <key name="home" qpos="0 0 0.005 1 0 0 0"/>
+  </keyframe>
 </mujoco>
