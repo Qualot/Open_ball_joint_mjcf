@@ -1,6 +1,8 @@
 # mjcf file of bio-inspired open ball joint
 [WIP] featuring muscle actuation and a floating joint without any constraint
 
+![thumbnail](https://raw.githubusercontent.com/Qualot/Open_ball_joint_mjcf/main/media/thumbnail.png)
+
 ## usage
 ```
 python3 -m venv .venv
