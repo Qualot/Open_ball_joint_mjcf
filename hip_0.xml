@@ -12,7 +12,8 @@
   <worldbody>
       <include file="assets/socket_0/body_socket_0.xml"/>
         <body name="floating_femur" pos="0 0 0.005">
-          <freejoint/>
+          <!-- <freejoint/> -->
+          <joint name="hip_free" type="free" stiffness="0" damping="0" frictionloss="0" armature="0"/>
           <include file="assets/femur_0.xml"/>
         </body>
   </worldbody>
