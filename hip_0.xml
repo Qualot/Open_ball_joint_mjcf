@@ -22,20 +22,28 @@
     <spatial name="t0" width=".008">
       <site site="s0"/>
       <geom geom="hip_ball" sidesite="x0"/>
+      <site site="x0"/>
+      <geom geom="hip_ball" sidesite="x0"/>
       <site site="s4"/>
     </spatial>
     <spatial name="t1" width=".008">
       <site site="s1"/>
+      <geom geom="hip_ball" sidesite="x1"/>
+      <site site="x1"/>
       <geom geom="hip_ball" sidesite="x1"/>
       <site site="s5"/>
     </spatial>
     <spatial name="t2" width=".008">
       <site site="s2"/>
       <geom geom="hip_ball" sidesite="x2"/>
+      <site site="x2"/>
+      <geom geom="hip_ball" sidesite="x2"/>
       <site site="s6"/>
     </spatial>
     <spatial name="t3" width=".008">
       <site site="s3"/>
+      <geom geom="hip_ball" sidesite="x3"/>
+      <site site="x3"/>
       <geom geom="hip_ball" sidesite="x3"/>
       <site site="s7"/>
     </spatial>
