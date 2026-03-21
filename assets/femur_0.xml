@@ -35,18 +35,18 @@
           mass="2"
           rgba=".2 .2 .2 1"
           friction=".00001 .00001 .00001"/>
-      <site name="s4" pos=".03 0 .1" size=".01" rgba=".1 .1 .5 1"/>
-      <site name="s5" pos="0 .03 .1" size=".01"/>
-      <site name="s6" pos="-.03 0 .1" size=".01"/>
-      <site name="s7" pos="0 -.03 .1" size=".01"/>
-      <site name="s8" pos=".03 0 .03" size="0.01" rgba=".1 .1 .5 1"/>
-      <site name="s9" pos="0 .03 .03" size="0.01"/>
-      <site name="s10" pos="-.03 0 .03" size="0.01"/>
-      <site name="s11" pos="0 -.03 .03" size="0.01"/>
-      <site name="x0" pos=".1 0 .03" size="0.01" rgba=".1 .5 .1 1"/>
-      <site name="x1" pos="0 .1 .03" size="0.01" rgba=".1 .5 .1 1"/>
-      <site name="x2" pos="-.1 0 .03" size="0.01" rgba=".1 .5 .1 1"/>
-      <site name="x3" pos="0 -.1 .03" size="0.01" rgba=".1 .5 .1 1"/>
+      <site name="femur_rod_s0" pos=".03 0 .1" size=".01" rgba=".1 .1 .5 1"/>
+      <site name="femur_rod_s1" pos="0 .03 .1" size=".01"/>
+      <site name="femur_rod_s2" pos="-.03 0 .1" size=".01"/>
+      <site name="femur_rod_s3" pos="0 -.03 .1" size=".01"/>
+      <site name="femur_ball_s0" pos=".03 0 .03" size="0.01" rgba=".1 .1 .5 1"/>
+      <site name="femur_ball_s1" pos="0 .03 .03" size="0.01"/>
+      <site name="femur_ball_s2" pos="-.03 0 .03" size="0.01"/>
+      <site name="femur_ball_s3" pos="0 -.03 .03" size="0.01"/>
+      <site name="femur_ball_x0" pos=".1 0 .03" size="0.01" rgba=".1 .5 .1 1"/>
+      <site name="femur_ball_x1" pos="0 .1 .03" size="0.01" rgba=".1 .5 .1 1"/>
+      <site name="femur_ball_x2" pos="-.1 0 .03" size="0.01" rgba=".1 .5 .1 1"/>
+      <site name="femur_ball_x3" pos="0 -.1 .03" size="0.01" rgba=".1 .5 .1 1"/>
     </body>
 
 
