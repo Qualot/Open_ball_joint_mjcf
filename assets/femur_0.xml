@@ -16,7 +16,7 @@
   <!-- femur body -->
     <body name="femur" pos="0 0 0">
     <!-- sphere (diameter 80mm) -->
-      <geom name="hip_ball"
+      <geom name="femur_ball"
           type="sphere"
           size="0.04"
           rgba=".2 .2 .2 1"
