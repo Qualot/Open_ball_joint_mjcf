@@ -24,7 +24,7 @@
 
       <!-- rod (length 300mm) -->
       <geom name="femur_rod"
-          type="capsule"
+          type="cylinder"
           fromto="0 0 0   0 0 0.3"
           size="0.015"
           rgba="0.1 0.1 0.1 1"/>
