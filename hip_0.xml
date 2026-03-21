@@ -21,31 +21,31 @@
   <tendon>
     <spatial name="t0" width=".008">
       <site site="socket_s0"/>
-      <geom geom="femur_ball" sidesite="x0"/>
-      <site site="s8"/>
-      <geom geom="femur_ball" sidesite="x0"/>
-      <site site="s4"/>
+      <geom geom="femur_ball" sidesite="femur_ball_x0"/>
+      <site site="femur_ball_s0"/>
+      <geom geom="femur_ball" sidesite="femur_ball_x0"/>
+      <site site="femur_rod_s0"/>
     </spatial>
     <spatial name="t1" width=".008">
       <site site="socket_s1"/>
-      <geom geom="femur_ball" sidesite="x1"/>
-      <site site="s9"/>
-      <geom geom="femur_ball" sidesite="x1"/>
-      <site site="s5"/>
+      <geom geom="femur_ball" sidesite="femur_ball_x1"/>
+      <site site="femur_ball_s1"/>
+      <geom geom="femur_ball" sidesite="femur_ball_x1"/>
+      <site site="femur_rod_s1"/>
     </spatial>
     <spatial name="t2" width=".008">
       <site site="socket_s2"/>
-      <geom geom="femur_ball" sidesite="x2"/>
-      <site site="s10"/>
-      <geom geom="femur_ball" sidesite="x2"/>
-      <site site="s6"/>
+      <geom geom="femur_ball" sidesite="femur_ball_x2"/>
+      <site site="femur_ball_s2"/>
+      <geom geom="femur_ball" sidesite="femur_ball_x2"/>
+      <site site="femur_rod_s2"/>
     </spatial>
     <spatial name="t3" width=".008">
       <site site="socket_s3"/>
-      <geom geom="femur_ball" sidesite="x3"/>
-      <site site="s11"/>
-      <geom geom="femur_ball" sidesite="x3"/>
-      <site site="s7"/>
+      <geom geom="femur_ball" sidesite="femur_ball_x3"/>
+      <site site="femur_ball_s3"/>
+      <geom geom="femur_ball" sidesite="femur_ball_x3"/>
+      <site site="femur_rod_s3"/>
     </spatial>
   </tendon>
 

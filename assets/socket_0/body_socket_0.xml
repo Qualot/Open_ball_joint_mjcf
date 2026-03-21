@@ -27,10 +27,10 @@
       <geom mesh="socket_0_collision_23" rgba="0.34739810953660255 0.7199511313354054 0.3810702235709854 1" class="collision"/>
       <geom mesh="socket_0_collision_24" rgba="0.7913053259550604 0.5174411942410169 0.10200937536502819 1" class="collision"/>
       <geom mesh="socket_0_collision_25" rgba="0.28785435832455397 0.1916005334020079 0.38343690939213404 1" class="collision"/>
-      <site name="s0" pos=".1 0 0" size="0.01" rgba=".1 .1 .5 1"/>
-      <site name="s1" pos="0 .1 0" size="0.01"/>
-      <site name="s2" pos="-.1 0 0" size="0.01"/>
-      <site name="s3" pos="0 -.1 0" size="0.01"/>
+      <site name="socket_s0" pos=".1 0 0" size="0.01" rgba=".1 .1 .5 1"/>
+      <site name="socket_s1" pos="0 .1 0" size="0.01"/>
+      <site name="socket_s2" pos="-.1 0 0" size="0.01"/>
+      <site name="socket_s3" pos="0 -.1 0" size="0.01"/>
     </body>
 
 
