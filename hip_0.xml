@@ -47,7 +47,7 @@
       <site site="femur_rod_s3"/>
     </spatial>
     <spatial name="t4" width=".005" rgba=".6 .2 .2 .5">
-      <site site="socket_s0"/>
+      <site site="socket_s4"/>
       <geom geom="femur_ball" sidesite="femur_ball_x0"/>
       <site site="femur_ball_s0"/>
       <geom geom="femur_ball" sidesite="femur_ball_x0"/>
@@ -60,7 +60,7 @@
       <site site="femur_rod_s3"/>
     </spatial>
     <spatial name="t5" width=".005" rgba=".6 .2 .2 5">
-      <site site="socket_s2"/>
+      <site site="socket_s5"/>
       <geom geom="femur_ball" sidesite="femur_ball_x2"/>
       <site site="femur_ball_s2"/>
       <geom geom="femur_ball" sidesite="femur_ball_x2"/>
@@ -73,7 +73,7 @@
       <site site="femur_rod_s1"/>
     </spatial>
     <spatial name="t6" width=".005" rgba=".6 .2 .2 .5">
-      <site site="socket_s2"/>
+      <site site="socket_s6"/>
       <geom geom="femur_ball" sidesite="femur_ball_x2"/>
       <site site="femur_ball_s2"/>
       <geom geom="femur_ball" sidesite="femur_ball_x2"/>
@@ -86,7 +86,7 @@
       <site site="femur_rod_s3"/>
     </spatial>
     <spatial name="t7" width=".005" rgba=".6 .2 .2 .5">
-      <site site="socket_s0"/>
+      <site site="socket_s7"/>
       <geom geom="femur_ball" sidesite="femur_ball_x0"/>
       <site site="femur_ball_s0"/>
       <geom geom="femur_ball" sidesite="femur_ball_x0"/>

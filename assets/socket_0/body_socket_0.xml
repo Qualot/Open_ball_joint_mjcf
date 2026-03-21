@@ -31,6 +31,10 @@
       <site name="socket_s1" pos="0 .1 0" size="0.01"/>
       <site name="socket_s2" pos="-.1 0 0" size="0.01"/>
       <site name="socket_s3" pos="0 -.1 0" size="0.01"/>
+      <site name="socket_s4" pos=".1 .01 0" size="0.01" rgba=".1 .1 .5 1"/>
+      <site name="socket_s5" pos="-.1 .01 0" size="0.01"/>
+      <site name="socket_s6" pos="-.1 -.01 0" size="0.01"/>
+      <site name="socket_s7" pos=".1 -.01 0" size="0.01"/>
     </body>
 
 
