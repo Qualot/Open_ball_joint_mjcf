@@ -4,7 +4,7 @@
       <geom group="2" type="mesh" contype="0" conaffinity="0"/>
     </default>
     <default class="collision">
-      <geom group="3" type="mesh" friction=".00001 .00001 .00001"/>
+      <geom group="3" type="mesh" friction=".01 .01 .01"/>
     </default>
   </default>
 </mujoco>
