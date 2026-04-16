@@ -1,0 +1,94 @@
+<mujoco model="hip_test">
+  <!-- separation of body and other parts (default, asset) is necessary for including body part in worldbody -->
+  <include file="assets/socket_0/default_socket_0.xml"/>
+  <include file="assets/socket_0/asset_socket_0.xml"/>
+
+  <default>
+    <motor gear="1" ctrllimited="true" ctrlrange="-2000 0"/>
+    <tendon rgba=".6 .2 .2 1"/>
+  </default>
+
+  <worldbody>
+      <include file="body_bottom_plate.xml"/>
+      <body name="floating_socket" pos="0 0 0">
+        <joint name="socket_free_ignore" type="free" stiffness="0" damping="0" frictionloss="0" armature="0"/>
+        <include file="assets/socket_0/body_socket_0.xml"/>
+      </body>
+      <body name="floating_femur" pos="0 0 0">
+        <!-- <freejoint/> -->
+        <joint name="hip_free" type="free" stiffness="0" damping="0" frictionloss="0" armature="0"/>
+        <include file="assets/femur_1.xml"/>
+      </body>
+  </worldbody>
+
+  <tendon>
+    <spatial name="t0" width=".008">
+      <site site="bottom_s0"/>
+      <geom geom="femur_ball" sidesite="femur_ball_x0"/>
+      <site site="femur_ball_s0"/>
+    </spatial>
+    <spatial name="t1" width=".008">
+      <site site="bottom_s1"/>
+      <geom geom="femur_ball" sidesite="femur_ball_x1"/>
+      <site site="femur_ball_s1"/>
+    </spatial>
+    <spatial name="t2" width=".008">
+      <site site="bottom_s2"/>
+      <geom geom="femur_ball" sidesite="femur_ball_x2"/>
+      <site site="femur_ball_s2"/>
+    </spatial>
+    <spatial name="t3" width=".008">
+      <site site="bottom_s3"/>
+      <geom geom="femur_ball" sidesite="femur_ball_x3"/>
+      <site site="femur_ball_s3"/>
+    </spatial>
+    <spatial name="t4" width=".008">
+      <site site="bottom_s4"/>
+      <geom geom="femur_ball" sidesite="femur_ball_x0"/>
+      <site site="femur_ball_s0"/>
+    </spatial>
+    <spatial name="t5" width=".008">
+      <site site="bottom_s5"/>
+      <geom geom="femur_ball" sidesite="femur_ball_x1"/>
+      <site site="femur_ball_s1"/>
+    </spatial>
+    <spatial name="t6" width=".008">
+      <site site="bottom_s6"/>
+      <geom geom="femur_ball" sidesite="femur_ball_x2"/>
+      <site site="femur_ball_s2"/>
+    </spatial>
+    <spatial name="t7" width=".008">
+      <site site="bottom_s7"/>
+      <geom geom="femur_ball" sidesite="femur_ball_x3"/>
+      <site site="femur_ball_s3"/>
+    </spatial>
+
+  </tendon>
+
+  <actuator>
+    <motor name="m0" tendon="t0"/>
+    <motor name="m1" tendon="t1"/>
+    <motor name="m2" tendon="t2"/>
+    <motor name="m3" tendon="t3"/>
+    <motor name="m4" tendon="t4"/>
+    <motor name="m5" tendon="t5"/>
+    <motor name="m6" tendon="t6"/>
+    <motor name="m7" tendon="t7"/>
+  </actuator>
+
+  <sensor>
+    <!-- <force name="dummy_force_0" site="dummy_site_0"/>
+    <force name="dummy_force_1" site="dummy_site_1"/>
+    <force name="dummy_force_2" site="dummy_site_2"/>
+    <force name="dummy_force_3" site="dummy_site_3"/>
+    <force name="dummy_force_4" site="dummy_site_0"/>
+    <force name="dummy_force_5" site="dummy_site_1"/>
+    <force name="dummy_force_6" site="dummy_site_2"/>
+    <force name="dummy_force_7" site="dummy_site_3"/> -->
+    <force name="dummy_force_8" site="femur_ball_center_s0"/>
+  </sensor>
+
+  <keyframe>
+    <key name="home" qpos="0.0 0.0 0.02 1 0 0 0 0.0 0.0 0.065 1 0 0 0"/>
+  </keyframe>
+</mujoco>

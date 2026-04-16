@@ -1,0 +1,54 @@
+<mujoco model="femur_test">
+  <!-- <worldbody>
+    <body name="femur" pos="0 0 0.04">
+      <geom name="hip_ball"
+            type="sphere"
+            size="0.04"
+            rgba="0.8 0.3 0.3 1"/>
+
+      <geom name="femur_rod"
+            type="capsule"
+            fromto="0 0 0   0 0 0.3"
+            size="0.015"
+            rgba="0.3 0.3 0.8 1"/>
+    </body>
+  </worldbody> -->
+  <!-- femur body -->
+    <body name="femur" pos="0 0 0">
+    <!-- sphere (diameter 80mm) -->
+      <geom name="femur_ball"
+          type="sphere"
+          size="0.04"
+          rgba=".2 .2 .2 1"
+          friction=".01 .01 .01"/>
+      <site name="femur_ball_center_s0" pos="0 0 0" size=".01" rgba=".1 .1 .5 1"/>
+
+      <!-- rod (length 300mm) -->
+      <geom name="femur_rod"
+          type="cylinder"
+          fromto="0 0 0   0 0 0.3"
+          size="0.015"
+          rgba="0.1 0.1 0.1 1"/>
+      <geom name="weight"
+          type="sphere"
+          size="0.08"
+          pos="0 0 .3"
+          mass="5"
+          rgba=".2 .2 .2 1"
+          friction=".01 .01 .01"/>
+      <site name="femur_rod_s0" pos=".02 0 .1" size=".01" rgba=".1 .1 .5 1"/>
+      <site name="femur_rod_s1" pos="0 .02 .1" size=".01"/>
+      <site name="femur_rod_s2" pos="-.02 0 .1" size=".01"/>
+      <site name="femur_rod_s3" pos="0 -.02 .1" size=".01"/>
+      <site name="femur_ball_s0" pos=".03 0 .05" size="0.01" rgba=".1 .1 .5 1"/>
+      <site name="femur_ball_s1" pos="0 .03 .05" size="0.01"/>
+      <site name="femur_ball_s2" pos="-.03 0 .05" size="0.01"/>
+      <site name="femur_ball_s3" pos="0 -.03 .05" size="0.01"/>
+      <site name="femur_ball_x0" pos=".1 0 .03" size="0.01" rgba=".1 .5 .1 1"/>
+      <site name="femur_ball_x1" pos="0 .1 .03" size="0.01" rgba=".1 .5 .1 1"/>
+      <site name="femur_ball_x2" pos="-.1 0 .03" size="0.01" rgba=".1 .5 .1 1"/>
+      <site name="femur_ball_x3" pos="0 -.1 .03" size="0.01" rgba=".1 .5 .1 1"/>
+    </body>
+
+
+</mujoco>
