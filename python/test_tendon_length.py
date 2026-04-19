@@ -205,8 +205,11 @@ def generate_circumduction_motion(tester, n_frames=200):
 
     return trajectory
 
+def save_trajectory_video(tester, trajectory, filename="circumduction.mp4", 
+                          fps=30, 
+                          distance=1.0, azimuth=180, elevation=0, 
+                          lookat=[0, 0, 0.5], render_tendons=False):
 
-def save_trajectory_video(tester, trajectory, filename="circumduction.mp4", fps=30, render_tendons=False):
     """
     Renders the given trajectory and saves it as an MP4 video file.
     """
@@ -220,10 +223,10 @@ def save_trajectory_video(tester, trajectory, filename="circumduction.mp4", fps=
     mujoco.mjv_defaultCamera(cam)
     
     # Adjust camera parameters
-    cam.distance = 1.0           # Zoom: Distance from the lookat point (smaller = closer)
-    cam.azimuth = 180            # Angle: Rotation around Z-axis (in degrees)
-    cam.elevation = 0          # Angle: Pitch/Vertical angle (in degrees)
-    cam.lookat[:] = [0, 0, 0.5]  # Focus point: [x, y, z] coordinates the camera points to
+    cam.distance = distance
+    cam.azimuth = azimuth
+    cam.elevation = elevation
+    cam.lookat[:] = lookat
     # ----------------------------
 
     # 2. Setup Visualization Options
@@ -279,8 +282,9 @@ def main(argv):
         #traj = generate_circumduction_motion(tester, n_frames=200)
 
         #tester.test_kinematics_trajectory(traj)
-        save_trajectory_video(tester, traj, filename="roll.mp4", fps=30, render_tendons=True)
 
+        # Save from the front
+        save_trajectory_video(tester, traj, filename="front_view.mp4", fps=30, azimuth=180, render_tendons=True)
 
     except Exception as e:
         print(f"Error during testing: {e}", file=sys.stderr)
