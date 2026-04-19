@@ -12,7 +12,7 @@ spec.modelname = "ball_joint_ligaments_all_to_all"
 spec.default.site.size = [0.002, 0.002, 0.002]
 spec.default.site.rgba = [1, 0, 0, 1]
 spec.default.tendon.width = 0.0005
-spec.default.tendon.rgba = [0.9, 0.9, 0.9, 0.1]
+spec.default.tendon.rgba = [0.9, 0.9, 0.9, 0.25]
 
 # 3. Worldbody and lighting
 world = spec.worldbody
@@ -91,6 +91,11 @@ for i in range(num_sites):
         spatial.wrap_site(f"origin_{i}")
         spatial.wrap_geom("sphere", f"relay_{i}")
         spatial.wrap_site(f"ins_{j}")
+        # enable limited range for the tendon
+        spatial.limited = True
+        # range = [min, max] in meters, representing the length limits of the tendon
+        spatial.range = [0, 0.2]
+
 
 # 7. Compile the model
 model = spec.compile()
