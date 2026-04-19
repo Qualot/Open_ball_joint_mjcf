@@ -111,7 +111,7 @@ def generate_pitch_motion(tester, n_frames=200):
         t = i / n_frames * 2 * np.pi  # 0 to 2pi
         
         current_qpos = initial_qpos.copy()
-        angle = 1/3 * np.pi + 1/6 * np.pi * np.sin(t) # -pi/6 to pi/2
+        angle = -1/6 * np.pi - 1/3 * np.pi * np.sin(t - np.pi/6) # -pi/6 to pi/2
 
         current_qpos[3] = np.cos(angle / 2) # w 
         current_qpos[5] = np.sin(angle / 2) # y
@@ -277,14 +277,17 @@ def main(argv):
         # tester.test_forward(steps=FLAGS.steps, interval=FLAGS.interval)
         
         # 3. Run the kinematics trajectory test
-        #traj = generate_pitch_motion(tester, n_frames=200)
-        traj = generate_roll_motion(tester, n_frames=200)
+        traj = generate_pitch_motion(tester, n_frames=200)
+        #traj = generate_roll_motion(tester, n_frames=200)
         #traj = generate_circumduction_motion(tester, n_frames=200)
 
         #tester.test_kinematics_trajectory(traj)
 
+        # Save from the left
+        save_trajectory_video(tester, traj, filename="left_view.mp4", fps=30, azimuth=-90, render_tendons=False)
+
         # Save from the front
-        save_trajectory_video(tester, traj, filename="front_view.mp4", fps=30, azimuth=180, render_tendons=False)
+        #save_trajectory_video(tester, traj, filename="front_view.mp4", fps=30, azimuth=180, render_tendons=False)
 
     except Exception as e:
         print(f"Error during testing: {e}", file=sys.stderr)
