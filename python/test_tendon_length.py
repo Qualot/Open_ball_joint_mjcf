@@ -284,7 +284,7 @@ def main(argv):
         #tester.test_kinematics_trajectory(traj)
 
         # Save from the front
-        save_trajectory_video(tester, traj, filename="front_view.mp4", fps=30, azimuth=180, render_tendons=True)
+        save_trajectory_video(tester, traj, filename="front_view.mp4", fps=30, azimuth=180, render_tendons=False)
 
     except Exception as e:
         print(f"Error during testing: {e}", file=sys.stderr)
