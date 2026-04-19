@@ -168,24 +168,10 @@ def generate_circumduction_motion(tester, n_frames=200):
     center_axis /= np.linalg.norm(center_axis)
 
     # 2. Define the initial vector (downward)
-    v_orig = np.array([0.0, 0.0, -1.0])
+    # v_orig = np.array([0.0, 0.0, -1.0])
     
-    # 3. Calculate the offset quaternion (from v_orig to center_axis)
-    # This aligns the joint with the center of the circumduction cone
-    q_offset = np.zeros(4)
-    # Reference: mujoco.mju_quatPose(q, pos, v_from, v_to) or manual calculation
-    # Using a simple cross-product and dot-product approach for the offset
-    v_from = v_orig / np.linalg.norm(v_orig)
-    v_to = center_axis / np.linalg.norm(center_axis)
-    dot = np.dot(v_from, v_to)
-    cross = np.cross(v_from, v_to)
-    
-    q_offset[0] = 1.0 + dot
-    q_offset[1:4] = cross
-    mujoco.mju_normalize4(q_offset)
-
     for i in range(n_frames):
-        t = i / n_frames * 2 * np.pi  # 0 to 2pi
+        t = - i / n_frames * 2 * np.pi  # 0 to 2pi
         
         # 4. Rotation around the central axis (q_rot)
         # Rotating by angle 't' around center_axis
@@ -195,7 +181,7 @@ def generate_circumduction_motion(tester, n_frames=200):
         # 5. Combine rotations: q_final = q_rot * q_offset
         # This performs the rotation around the world-fixed center_axis
         q_final = np.zeros(4)
-        mujoco.mju_mulQuat(q_final, q_rot, q_offset)
+        mujoco.mju_mulQuat(q_final, q_rot, initial_qpos[3:7])  # Apply q_rot to the initial orientation
 
         current_qpos = initial_qpos.copy()
         # Assume qpos[3:7] is the quaternion (w, x, y, z)
@@ -277,9 +263,9 @@ def main(argv):
         # tester.test_forward(steps=FLAGS.steps, interval=FLAGS.interval)
         
         # 3. Run the kinematics trajectory test
-        traj = generate_pitch_motion(tester, n_frames=200)
+        #traj = generate_pitch_motion(tester, n_frames=200)
         #traj = generate_roll_motion(tester, n_frames=200)
-        #traj = generate_circumduction_motion(tester, n_frames=200)
+        traj = generate_circumduction_motion(tester, n_frames=200)
 
         #tester.test_kinematics_trajectory(traj)
 
