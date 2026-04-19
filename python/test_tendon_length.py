@@ -168,7 +168,7 @@ def generate_circumduction_motion(tester, n_frames=200):
     center_axis /= np.linalg.norm(center_axis)
 
     # 2. Define the initial vector (downward)
-    # v_orig = np.array([0.0, 0.0, -1.0])
+    v_orig = np.array([0.0, 0.0, -1.0])
     
     for i in range(n_frames):
         t = - i / n_frames * 2 * np.pi  # 0 to 2pi
@@ -180,8 +180,17 @@ def generate_circumduction_motion(tester, n_frames=200):
 
         # 5. Combine rotations: q_final = q_rot * q_offset
         # This performs the rotation around the world-fixed center_axis
+        q_mid = np.zeros(4)
+        mujoco.mju_mulQuat(q_mid, q_rot, initial_qpos[3:7])  # Apply q_rot to the initial orientation
+
+        v_rotated = np.zeros(3)
+        mujoco.mju_rotVecQuat(v_rotated, v_orig, q_rot)
+
+        q_to_front = np.zeros(4)
         q_final = np.zeros(4)
-        mujoco.mju_mulQuat(q_final, q_rot, initial_qpos[3:7])  # Apply q_rot to the initial orientation
+        mujoco.mju_axisAngle2Quat(q_to_front, v_rotated, -t)
+        mujoco.mju_mulQuat(q_final, q_to_front, q_mid)  # Apply q_to_front to the initial orientation
+
 
         current_qpos = initial_qpos.copy()
         # Assume qpos[3:7] is the quaternion (w, x, y, z)
