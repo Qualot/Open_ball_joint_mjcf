@@ -5,6 +5,7 @@ import sys
 from absl import app
 from absl import flags
 from absl import logging
+import mediapy as media 
 
 # --- 1. Define Flags ---
 FLAGS = flags.FLAGS
@@ -92,9 +93,9 @@ class TendonTester:
                 print(f"{frame}," + ",".join([f"{x:.6f}" for x in qpos]) + "," + ",".join(lengths))
 
 
-def test_pitch_motion(tester, n_frames=200):
+def generate_pitch_motion(tester, n_frames=200):
     """
-    Test tendon lengths during a simple pitch motion of the joint.
+    Generate a pitch motion trajectory for testing tendon lengths.
     This is a basic sanity check to see if tendon lengths change as expected.
     """
     n_frames = n_frames
@@ -117,8 +118,122 @@ def test_pitch_motion(tester, n_frames=200):
         
         trajectory[i] = current_qpos
 
-    qpos_trajectory = trajectory
-    tester.test_kinematics_trajectory(qpos_trajectory)
+    return trajectory
+
+
+
+def generate_roll_motion(tester, n_frames=200):
+    """
+    Generate a roll motion trajectory for testing tendon lengths.
+    """
+    # Initialize trajectory array
+    trajectory = np.zeros((n_frames, tester.model.nq))
+
+    # Start with the current state (initial position)
+    initial_qpos = tester.data.qpos.copy()
+
+    for i in range(n_frames):
+        # Time variable from 0 to 2*pi
+        t = i / n_frames * 2 * np.pi
+        
+        current_qpos = initial_qpos.copy()
+        
+        # Define the roll angle (rotation around X-axis)
+        # Oscillate between -30 and +30 degrees (pi/6 rad)
+        angle = (np.pi / 4) * np.sin(t) + np.pi / 4
+
+        # Quaternion for rotation around X-axis:
+        # q = [cos(theta/2), sin(theta/2), 0, 0] -> [w, x, y, z]
+        current_qpos[3] = np.cos(angle / 2)  # w (scalar part)
+        current_qpos[4] = np.sin(angle / 2)  # x (vector part - X axis)
+        current_qpos[5] = 0                  # y
+        current_qpos[6] = 0                  # z
+        
+        trajectory[i] = current_qpos
+
+    return trajectory
+
+
+def generate_circumduction_motion(tester, n_frames=200):
+    """
+    Tests tendon lengths during a circumduction motion.
+    The joint axis rotates around a central axis defined by [0, 1, -1].
+    """
+    trajectory = np.zeros((n_frames, tester.model.nq))
+    initial_qpos = tester.data.qpos.copy()
+
+    # 1. Define and normalize the central axis of the cone
+    # Direction: [0, 1, -1]
+    center_axis = np.array([0.0, 1.0, -1.0])
+    center_axis /= np.linalg.norm(center_axis)
+
+    # 2. Define the initial vector (downward)
+    v_orig = np.array([0.0, 0.0, -1.0])
+    
+    # 3. Calculate the offset quaternion (from v_orig to center_axis)
+    # This aligns the joint with the center of the circumduction cone
+    q_offset = np.zeros(4)
+    # Reference: mujoco.mju_quatPose(q, pos, v_from, v_to) or manual calculation
+    # Using a simple cross-product and dot-product approach for the offset
+    v_from = v_orig / np.linalg.norm(v_orig)
+    v_to = center_axis / np.linalg.norm(center_axis)
+    dot = np.dot(v_from, v_to)
+    cross = np.cross(v_from, v_to)
+    
+    q_offset[0] = 1.0 + dot
+    q_offset[1:4] = cross
+    mujoco.mju_normalize4(q_offset)
+
+    for i in range(n_frames):
+        t = i / n_frames * 2 * np.pi  # 0 to 2pi
+        
+        # 4. Rotation around the central axis (q_rot)
+        # Rotating by angle 't' around center_axis
+        q_rot = np.zeros(4)
+        mujoco.mju_axisAngle2Quat(q_rot, center_axis, t)
+
+        # 5. Combine rotations: q_final = q_rot * q_offset
+        # This performs the rotation around the world-fixed center_axis
+        q_final = np.zeros(4)
+        mujoco.mju_mulQuat(q_final, q_rot, q_offset)
+
+        current_qpos = initial_qpos.copy()
+        # Assume qpos[3:7] is the quaternion (w, x, y, z)
+        current_qpos[3:7] = q_final
+        
+        trajectory[i] = current_qpos
+
+    return trajectory
+
+
+def save_trajectory_video(tester, trajectory, filename="circumduction.mp4", fps=30):
+    """
+    Renders the given trajectory and saves it as an MP4 video file.
+    """
+    # Create a renderer for the model
+    # Note: width and height can be adjusted as needed
+    renderer = mujoco.Renderer(tester.model, height=480, width=640)
+    frames = []
+
+    print(f"Rendering {len(trajectory)} frames...")
+
+    for qpos in trajectory:
+        # 1. Update the robot state
+        tester.data.qpos[:] = qpos
+        
+        # 2. Synchronize kinematics (positions of all bodies/sites)
+        mujoco.mj_kinematics(tester.model, tester.data)
+        
+        # 3. Update the renderer with the current data
+        renderer.update_scene(tester.data)
+        
+        # 4. Render the frame and append to the list
+        pixels = renderer.render()
+        frames.append(pixels)
+
+    # 5. Write the frames to a video file
+    media.write_video(filename, frames, fps=fps)
+    print(f"Video saved successfully: {filename}")
 
 
 def main(argv):
@@ -132,7 +247,12 @@ def main(argv):
         # tester.test_forward(steps=FLAGS.steps, interval=FLAGS.interval)
         
         # 3. Run the kinematics trajectory test
-        test_pitch_motion(tester, n_frames=200)
+        #traj = generate_pitch_motion(tester, n_frames=200)
+        traj = generate_roll_motion(tester, n_frames=200)
+        #traj = generate_circumduction_motion(tester, n_frames=200)
+
+        #tester.test_kinematics_trajectory(traj)
+        save_trajectory_video(tester, traj, filename="roll.mp4", fps=30)
 
 
     except Exception as e:
