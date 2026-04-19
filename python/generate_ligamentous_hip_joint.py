@@ -79,7 +79,7 @@ for i in range(num_sites):
 
 
 # Tendon generation: Hall connection
-separates = 12
+separates = num_sites
 for i in range(num_sites):
     for j in np.arange(-num_sites/separates,num_sites/separates+1,1): # Connect each origin to 3-4 insertions around the circle
         j = j + i
@@ -93,7 +93,7 @@ for i in range(num_sites):
         spatial.wrap_geom("sphere", f"relay_{i}")
         spatial.wrap_site(f"ins_{j}")
 
-        spatial.frictionloss = 0.01 # Add some friction loss to the tendon
+        spatial.frictionloss = 0.02 # Add some friction loss to the tendon
 
         # enable limited range for the tendon
         spatial.limited = True
