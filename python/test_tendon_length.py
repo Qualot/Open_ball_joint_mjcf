@@ -139,8 +139,8 @@ def generate_roll_motion(tester, n_frames=200):
         current_qpos = initial_qpos.copy()
         
         # Define the roll angle (rotation around X-axis)
-        # Oscillate between -30 and +30 degrees (pi/6 rad)
-        angle = (np.pi / 4) * np.sin(t) + np.pi / 4
+        # Oscillate between 0 and +90 degrees (pi/2 rad)
+        angle = - (np.pi / 4) * np.cos(t) + np.pi / 4
 
         # Quaternion for rotation around X-axis:
         # q = [cos(theta/2), sin(theta/2), 0, 0] -> [w, x, y, z]
@@ -206,13 +206,35 @@ def generate_circumduction_motion(tester, n_frames=200):
     return trajectory
 
 
-def save_trajectory_video(tester, trajectory, filename="circumduction.mp4", fps=30):
+def save_trajectory_video(tester, trajectory, filename="circumduction.mp4", fps=30, render_tendons=False):
     """
     Renders the given trajectory and saves it as an MP4 video file.
     """
     # Create a renderer for the model
     # Note: width and height can be adjusted as needed
     renderer = mujoco.Renderer(tester.model, height=480, width=640)
+
+# --- Add/Modify from here ---
+    # Create a camera object
+    cam = mujoco.MjvCamera()
+    mujoco.mjv_defaultCamera(cam)
+    
+    # Adjust camera parameters
+    cam.distance = 1.0           # Zoom: Distance from the lookat point (smaller = closer)
+    cam.azimuth = 180            # Angle: Rotation around Z-axis (in degrees)
+    cam.elevation = 0          # Angle: Pitch/Vertical angle (in degrees)
+    cam.lookat[:] = [0, 0, 0.5]  # Focus point: [x, y, z] coordinates the camera points to
+    # ----------------------------
+
+    # 2. Setup Visualization Options
+    scene_option = mujoco.MjvOption()
+    # Explicitly enable tendon rendering
+    # mjtVisFlag.mjVIS_TENDON corresponds to the tendon visibility
+    scene_option.flags[mujoco.mjtVisFlag.mjVIS_TENDON] = render_tendons
+    
+    # Optional: Enable sites or actuators if needed
+    # scene_option.flags[mujoco.mjtVisFlag.mjVIS_SITE] = True
+
     frames = []
 
     print(f"Rendering {len(trajectory)} frames...")
@@ -223,11 +245,16 @@ def save_trajectory_video(tester, trajectory, filename="circumduction.mp4", fps=
         
         # 2. Synchronize kinematics (positions of all bodies/sites)
         mujoco.mj_kinematics(tester.model, tester.data)
+
+        # 3. Specifically update tendon lengths (depends on site positions)
+        # This follows mj_kinematics to resolve wrapping and path lengths
+        if render_tendons:
+            mujoco.mj_tendon(tester.model, tester.data)
+
+        # 4. Update the renderer with the current data
+        renderer.update_scene(tester.data, camera=cam, scene_option=scene_option)
         
-        # 3. Update the renderer with the current data
-        renderer.update_scene(tester.data)
-        
-        # 4. Render the frame and append to the list
+        # 5. Render the frame and append to the list
         pixels = renderer.render()
         frames.append(pixels)
 
@@ -252,7 +279,7 @@ def main(argv):
         #traj = generate_circumduction_motion(tester, n_frames=200)
 
         #tester.test_kinematics_trajectory(traj)
-        save_trajectory_video(tester, traj, filename="roll.mp4", fps=30)
+        save_trajectory_video(tester, traj, filename="roll.mp4", fps=30, render_tendons=True)
 
 
     except Exception as e:
