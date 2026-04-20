@@ -61,14 +61,15 @@ class TendonTester:
                 row = f"{step}," + ",".join(lengths)
                 print(row)
 
-    def test_kinematics_trajectory(self, trajectory):
+    def test_kinematics_trajectory(self, angles, trajectory):
             """
             Calculates tendon lengths for a given joint trajectory without physics.
             Args:
+                angles (np.ndarray): An array of joint angles for each frame.
                 trajectory (np.ndarray): A 2D array where each row is a qpos vector.
             """
             # Print CSV Header
-            header = "frame," + ",".join([f"qpos{i}" for i in range(self.model.nq)]) + "," + ",".join(self.tendon_names)
+            header = "frame," + "angle," + ",".join([f"qpos{i}" for i in range(self.model.nq)]) + "," + ",".join(self.tendon_names)
             print(header)
 
             for frame, qpos in enumerate(trajectory):
@@ -90,7 +91,7 @@ class TendonTester:
                 # 4. Format and print
                 lengths = [f"{self.data.ten_length[i]:.6f}" for i in range(self.model.ntendon)]
                 #print(f"{frame}," + f"{qpos}," + ",".join(lengths))
-                print(f"{frame}," + ",".join([f"{x:.6f}" for x in qpos]) + "," + ",".join(lengths))
+                print(f"{frame}," + f"{angles[frame]:.6f}," + ",".join([f"{x:.6f}" for x in qpos]) + "," + ",".join(lengths))
 
 
 def generate_pitch_motion(tester, n_frames=200):
@@ -100,6 +101,7 @@ def generate_pitch_motion(tester, n_frames=200):
     """
     n_frames = n_frames
     # qpos ... pox3, quat4
+    angles = np.zeros(n_frames)  # for debugging/visualization: store the pitch angle for each frame
     trajectory = np.zeros((n_frames, tester.model.nq))
 
     # initial qpos is from the model data. 
@@ -116,10 +118,10 @@ def generate_pitch_motion(tester, n_frames=200):
         current_qpos[3] = np.cos(angle / 2) # w 
         current_qpos[5] = np.sin(angle / 2) # y
         
+        angles[i] = angle
         trajectory[i] = current_qpos
 
-    return trajectory
-
+    return angles, trajectory
 
 
 def generate_roll_motion(tester, n_frames=200):
@@ -274,15 +276,15 @@ def main(argv):
         # 3. Run the kinematics trajectory test
         #traj = generate_pitch_motion(tester, n_frames=200)
         #traj = generate_roll_motion(tester, n_frames=200)
-        traj = generate_circumduction_motion(tester, n_frames=200)
+        angles, traj = generate_pitch_motion(tester, n_frames=200)
 
-        #tester.test_kinematics_trajectory(traj)
+        tester.test_kinematics_trajectory(angles, traj)
 
         # Save from the left
-        save_trajectory_video(tester, traj, filename="left_view.mp4", fps=30, azimuth=-90, render_tendons=False)
+        # save_trajectory_video(tester, traj, filename="left_view.mp4", fps=30, azimuth=-90, render_tendons=False)
 
         # Save from the front
-        #save_trajectory_video(tester, traj, filename="front_view.mp4", fps=30, azimuth=180, render_tendons=False)
+        # save_trajectory_video(tester, traj, filename="front_view.mp4", fps=30, azimuth=180, render_tendons=False)
 
     except Exception as e:
         print(f"Error during testing: {e}", file=sys.stderr)
