@@ -75,7 +75,7 @@ for i in range(num_sites):
     if i == 0:
         s_orig.rgba = [0, 0, 1, 1] # Blue for the first origin site
         s_ins.rgba =  [0, 0, 1, 1] # Blue for the first insertion site
-        s_relay.rgba =  [0, 0, 1, 1] # Blue for the first insertion site
+        s_relay.rgba =  [0, 0, 1, 1] # Blue for the first relay site
 
 
 # Tendon generation: Hall connection
