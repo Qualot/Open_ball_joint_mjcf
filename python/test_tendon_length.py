@@ -129,6 +129,7 @@ def generate_roll_motion(tester, n_frames=200):
     Generate a roll motion trajectory for testing tendon lengths.
     """
     # Initialize trajectory array
+    angles = np.zeros(n_frames)  # for debugging/visualization: store the pitch angle for each frame
     trajectory = np.zeros((n_frames, tester.model.nq))
 
     # Start with the current state (initial position)
@@ -150,10 +151,11 @@ def generate_roll_motion(tester, n_frames=200):
         current_qpos[4] = np.sin(angle / 2)  # x (vector part - X axis)
         current_qpos[5] = 0                  # y
         current_qpos[6] = 0                  # z
-        
+
+        angles[i] = angle        
         trajectory[i] = current_qpos
 
-    return trajectory
+    return angles, trajectory
 
 
 def generate_circumduction_motion(tester, n_frames=200):
@@ -274,9 +276,8 @@ def main(argv):
         # tester.test_forward(steps=FLAGS.steps, interval=FLAGS.interval)
         
         # 3. Run the kinematics trajectory test
-        #traj = generate_pitch_motion(tester, n_frames=200)
-        #traj = generate_roll_motion(tester, n_frames=200)
-        angles, traj = generate_pitch_motion(tester, n_frames=200)
+        #angles, traj = generate_pitch_motion(tester, n_frames=200)
+        angles, traj = generate_roll_motion(tester, n_frames=200)
 
         tester.test_kinematics_trajectory(angles, traj)
 
