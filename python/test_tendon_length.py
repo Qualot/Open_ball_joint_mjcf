@@ -163,6 +163,7 @@ def generate_circumduction_motion(tester, n_frames=200):
     Tests tendon lengths during a circumduction motion.
     The joint axis rotates around a central axis defined by [0, 1, -1].
     """
+    angles = np.zeros(n_frames)  # for debugging/visualization: store the pitch angle for each frame
     trajectory = np.zeros((n_frames, tester.model.nq))
     initial_qpos = tester.data.qpos.copy()
 
@@ -200,9 +201,11 @@ def generate_circumduction_motion(tester, n_frames=200):
         # Assume qpos[3:7] is the quaternion (w, x, y, z)
         current_qpos[3:7] = q_final
         
+        angles[i] = t
         trajectory[i] = current_qpos
 
-    return trajectory
+    return angles, trajectory
+
 
 def save_trajectory_video(tester, trajectory, filename="circumduction.mp4", 
                           fps=30, 
@@ -276,8 +279,9 @@ def main(argv):
         # tester.test_forward(steps=FLAGS.steps, interval=FLAGS.interval)
         
         # 3. Run the kinematics trajectory test
-        #angles, traj = generate_pitch_motion(tester, n_frames=200)
-        angles, traj = generate_roll_motion(tester, n_frames=200)
+        # angles, traj = generate_pitch_motion(tester, n_frames=200)
+        # angles, traj = generate_roll_motion(tester, n_frames=200)
+        angles, traj = generate_circumduction_motion(tester, n_frames=200)
 
         tester.test_kinematics_trajectory(angles, traj)
 
