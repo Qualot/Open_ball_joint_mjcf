@@ -20,14 +20,16 @@ world.add_light(diffuse=[.5, .5, .5], pos=[0, 0, 1], dir=[90, 0, -1])
 world.add_geom(type=mujoco.mjtGeom.mjGEOM_PLANE, size=[1, 1, 0.01], rgba=[.9, .9, .9, 1])
 
 # 4. Base Plate
-base_plate = world.add_body(name="base_plate", pos=[0, 0, 0.5], euler=[45, 0, 0])
+base_z = 0.5
+base_plate = world.add_body(name="base_plate", pos=[0, 0, base_z], euler=[45, 0, 0])
 base_plate.add_geom(name="ligament_origin_geom", type=mujoco.mjtGeom.mjGEOM_CYLINDER, 
                    size=[0.05, 0.005], rgba=[.3, .3, .3, 1])
 
 sites_origin_body = base_plate.add_body(name="sites_origin", pos=[0, 0, -0.005])
 
 # 5. Link parts
-link = world.add_body(name="link", pos=[0, 0.025, 0.45], euler=[0, 0, 0])
+hip_y, hip_z = 0.035, -0.035
+link = world.add_body(name="link", pos=[0, hip_y, base_z + hip_z], euler=[0, 0, 0])
 link.add_joint(name="ball_joint", type=mujoco.mjtJoint.mjJNT_FREE, damping=0.05)
 link.add_geom(name="ligament_insertion_geom", type=mujoco.mjtGeom.mjGEOM_CYLINDER, 
               pos=[0, 0, -0.05], size=[0.025, 0.005], rgba=[.3, .3, .3, 1])
