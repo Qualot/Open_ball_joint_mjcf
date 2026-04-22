@@ -95,7 +95,7 @@ for i in range(num_sites):
         spatial.wrap_geom("sphere", f"relay_{i}")
         spatial.wrap_site(f"ins_{j}")
 
-        spatial.frictionloss = 0.02 # Add some friction loss to the tendon
+        spatial.frictionloss = 0.05 # Add some friction loss to the tendon
 
         # enable limited range for the tendon
         spatial.limited = True
