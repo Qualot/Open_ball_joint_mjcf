@@ -81,7 +81,7 @@ for i in range(num_sites):
 
 
 # Tendon generation: Hall connection
-separates = num_sites / 3
+separates = num_sites
 for i in range(num_sites):
     for j in np.arange(-num_sites/separates,num_sites/separates+1,1): # Connect each origin to 3-4 insertions around the circle
         j = j + i
