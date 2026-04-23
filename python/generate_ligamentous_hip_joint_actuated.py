@@ -158,10 +158,16 @@ class LigamentousHipBuilder:
                 spatial.limited = True
                 spatial.range = self.config.ligament_range
 
-# --- Execution ---
-builder = LigamentousHipBuilder()
-spec = builder.build()
-model = spec.compile()
 
-# Verification
-print(spec.to_xml())
+def main():
+    # --- Execution ---
+    builder = LigamentousHipBuilder()
+    spec = builder.build()
+    model = spec.compile()
+
+    # Verification
+    print(spec.to_xml())
+
+
+if __name__ == "__main__":
+    main()
