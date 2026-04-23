@@ -11,8 +11,8 @@ class HipConfig:
     
     # Ligament parameters
     num_sites: int = 12
-    r_origin: float = 0.05
-    r_ins: float = 0.025
+    r_lig_origin: float = 0.05
+    r_lig_ins: float = 0.025
     r_relay: float = 0.05
     ligament_friction: float = 0.05
     ligament_range: list = field(default_factory=lambda: [0, 0.2])
@@ -147,13 +147,13 @@ class LigamentousHipBuilder:
             
             # Origin sites
             origin_body.add_site(name=f"lig_origin_{i}", 
-                                pos=[self.config.r_origin * cos_a, self.config.r_origin * sin_a, 0],
+                                pos=[self.config.r_lig_origin * cos_a, self.config.r_lig_origin * sin_a, 0],
                                 rgba=[0.5, 0.5, 0.5, 1] if i != 0 else [0, 0, 1, 1]
                                 )
             
             # Insertion sites
             ins_container.add_site(name=f"lig_insertion_{i}", 
-                                   pos=[self.config.r_ins * cos_a, self.config.r_ins * sin_a, 0],
+                                   pos=[self.config.r_lig_ins * cos_a, self.config.r_lig_ins * sin_a, 0],
                                    rgba=[0.5, 0.5, 0.5, 1] if i != 0 else [0, 0, 1, 1])
 
         # Tendon connection logic
