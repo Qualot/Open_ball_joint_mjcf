@@ -109,6 +109,8 @@ class LigamentousHipBuilder:
         # Link geoms
         link.add_geom(name="ligament_insertion_geom", type=mujoco.mjtGeom.mjGEOM_CYLINDER, 
                       pos=[0, 0, -0.05], size=[0.025, 0.005], rgba=[.3, .3, .3, 1])
+        link.add_geom(name="tendon_insertion_geom", type=mujoco.mjtGeom.mjGEOM_CYLINDER, 
+                      pos=[0, 0, -0.1], size=[0.05, 0.005], rgba=[.3, .3, .3, 1])
         link.add_geom(name="sphere", type=mujoco.mjtGeom.mjGEOM_SPHERE, size=[0.04], 
                       rgba=[0, .7, .7, 0.5], friction=[0.001, 0.001, 0.001])
         link.add_geom(name="cylinder", type=mujoco.mjtGeom.mjGEOM_CYLINDER, 
@@ -167,14 +169,15 @@ class LigamentousHipBuilder:
                 spatial.frictionloss = self.config.ligament_friction
                 spatial.limited = True
                 spatial.range = self.config.ligament_range
-                
+
     def _add_motor_tendons(self, origin_body, link_body):
         """Create sites and tendons using pre-generated relay sites"""
         ins_container = link_body.add_body(name="sites_tendon_insertion", pos=[0, 0, -0.1])
-        num = self.config.num_tendon_origins
+        num_origins = self.config.num_tendon_origins
+        num_insertions = self.config.num_tendon_insertions
         
-        for i in range(num):
-            angle = 2 * np.pi * i / num
+        for i in range(num_origins):
+            angle = 2 * np.pi * i / num_origins
             cos_a, sin_a = np.cos(angle), np.sin(angle)
             
             # Origin sites
@@ -183,24 +186,24 @@ class LigamentousHipBuilder:
                                 rgba=[1, 0, 0, 1] if i != 0 else [0, 0, 1, 1]
                                 )
             
-        #     # Insertion sites
-        #     ins_container.add_site(name=f"tendon_insertion_{i}", 
-        #                            pos=[self.config.r_tendon_ins * cos_a, self.config.r_tendon_ins * sin_a, 0],
-        #                            rgba=[0.5, 0.5, 0.5, 1] if i != 0 else [0, 0, 1, 1])
+        for i in range(num_insertions):
+            angle = 2 * np.pi * i / num_insertions
+            cos_a, sin_a = np.cos(angle), np.sin(angle)
 
-        # # Tendon connection logic
-        # for i in range(num):
-        #     for offset in [-1, 0, 1]:
-        #         j = (i + offset) % num
-        #         spatial = self.spec.add_tendon(name=f"lig_{i}_{j}")
-        #         spatial.wrap_site(f"lig_origin_{i}")
-        #         # Reusing the relay site name (or object)
-        #         spatial.wrap_geom("sphere", f"relay_{i}") 
-        #         spatial.wrap_site(f"lig_insertion_{j}")
-                
-        #         spatial.frictionloss = self.config.ligament_friction
-        #         spatial.limited = True
-        #         spatial.range = self.config.ligament_range
+            # Insertion sites
+            ins_container.add_site(name=f"tendon_insertion_{i}", 
+                                   pos=[self.config.r_tendon_ins * cos_a, self.config.r_tendon_ins * sin_a, 0],
+                                   rgba=[1, 0, 0, 1] if i != 0 else [0, 0, 1, 1])
+
+        # Tendon connection logic
+        for i in range(num_origins):
+            j = i//2
+            k = int(i/2*3)
+            spatial = self.spec.add_tendon(name=f"tendon_{i}_{j}", width=0.001, rgba=[1, 0, 0, 0.5])
+            spatial.wrap_site(f"tendon_origin_{i}")
+            # Reusing the relay site name (or object)
+            spatial.wrap_geom("sphere", f"relay_{k}") 
+            spatial.wrap_site(f"tendon_insertion_{j}")
 
 def main():
     # --- Execution ---
