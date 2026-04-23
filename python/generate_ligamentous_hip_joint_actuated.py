@@ -21,7 +21,7 @@ world.add_geom(type=mujoco.mjtGeom.mjGEOM_PLANE, size=[1, 1, 0.01], rgba=[.9, .9
 
 # 4. Pelvis and Base Plate
 pelvis_y = 0
-pelvis_z = 0.5
+pelvis_z = 0.7
 frame_size = 0.03
 pelvis_frame = world.add_body(name="pelvis_frame", pos=[0, pelvis_y, pelvis_z], euler=[0, 0, 0])
 pelvis_frame.add_geom(type=mujoco.mjtGeom.mjGEOM_BOX, pos=[0.05-frame_size/2, frame_size/2, -0.1/2-frame_size/2], size=[frame_size/2, frame_size/2, 0.1/2], rgba=[.5, .5, .5, 1])
