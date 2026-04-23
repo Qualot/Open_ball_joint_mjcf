@@ -22,6 +22,9 @@ class LigamentousHipBuilder:
         self.spec = mujoco.MjSpec()
         self.config = HipConfig()
         self.spec.modelname = self.config.model_name
+        # Storage for reuse
+        self.relay_sites = []
+        self.relay_container = None
         
     def build(self):
         """Main build pipeline"""
@@ -36,8 +39,14 @@ class LigamentousHipBuilder:
         link = self._add_link_parts()
         
         # Procedural generation
+        # 1. First, generate relay sites (to be shared)
+        self._add_relay_sites(link)
+        
+        # 2. Then, use them for ligaments
         self._generate_ligaments(sites_origin_body, link)
         
+        # 3. (Optional) Use them for motor tendons later
+        # self._add_motor_tendons(...)
         return self.spec
 
     def _set_defaults(self):
@@ -98,41 +107,51 @@ class LigamentousHipBuilder:
                       pos=[0, 0, -0.3], size=[0.08], mass=5, rgba=[.7, .7, .7, 1])
         return link
 
-    def _generate_ligaments(self, origin_body, link_body):
-        """Create sites and tendons procedurally"""
-        # Auxiliary bodies for site organization
-        ins_container = link_body.add_body(name="sites_insertion", pos=[0, 0, -0.045])
-        relay_container = link_body.add_body(name="sites_relay")
-        
+    def _add_relay_sites(self, parent_body):
+        """Creates relay sites and stores them for multiple uses (ligaments/motors)"""
+        # Create a container for organization
+        self.relay_container = parent_body.add_body(name="sites_relay")
         num = self.config.num_sites
         
-        # 1. Create Sites
+        for i in range(num):
+            angle = 2 * np.pi * i / num
+            cos_a, sin_a = np.cos(angle), np.sin(angle)
+            
+            s_relay = self.relay_container.add_site(
+                name=f"relay_{i}", 
+                pos=[self.config.r_relay * cos_a, self.config.r_relay * sin_a, 0],
+                rgba=[0, 1, 0, 1] if i != 0 else [0, 0, 1, 1]
+            )
+            self.relay_sites.append(s_relay)
+
+    def _generate_ligaments(self, origin_body, link_body):
+        """Create sites and tendons using pre-generated relay sites"""
+        ins_container = link_body.add_body(name="sites_insertion", pos=[0, 0, -0.045])
+        num = self.config.num_sites
+        
         for i in range(num):
             angle = 2 * np.pi * i / num
             cos_a, sin_a = np.cos(angle), np.sin(angle)
             
             # Origin sites
-            s_orig = origin_body.add_site(name=f"origin_{i}", 
-                                          pos=[self.config.r_origin * cos_a, self.config.r_origin * sin_a, 0])
+            origin_body.add_site(name=f"origin_{i}", 
+                                pos=[self.config.r_origin * cos_a, self.config.r_origin * sin_a, 0],
+                                rgba=[0.5, 0.5, 0.5, 1] if i != 0 else [0, 0, 1, 1]
+                                )
+            
             # Insertion sites
             ins_container.add_site(name=f"ins_{i}", 
-                                   pos=[self.config.r_ins * cos_a, self.config.r_ins * sin_a, 0])
-            # Relay sites
-            s_relay = relay_container.add_site(name=f"relay_{i}", 
-                                               pos=[self.config.r_relay * cos_a, self.config.r_relay * sin_a, 0],
-                                               rgba=[0, 1, 0, 1])
-            
-            if i == 0:
-                s_orig.rgba = s_relay.rgba = [0, 0, 1, 1] # Highlight first set
+                                   pos=[self.config.r_ins * cos_a, self.config.r_ins * sin_a, 0],
+                                   rgba=[0.5, 0.5, 0.5, 1] if i != 0 else [0, 0, 1, 1])
 
-        # 2. Create Tendons
+        # Tendon connection logic
         for i in range(num):
-            # Connect each origin to nearby insertions
             for offset in [-1, 0, 1]:
                 j = (i + offset) % num
                 spatial = self.spec.add_tendon(name=f"lig_{i}_{j}")
                 spatial.wrap_site(f"origin_{i}")
-                spatial.wrap_geom("sphere", f"relay_{i}")
+                # Reusing the relay site name (or object)
+                spatial.wrap_geom("sphere", f"relay_{i}") 
                 spatial.wrap_site(f"ins_{j}")
                 
                 spatial.frictionloss = self.config.ligament_friction
