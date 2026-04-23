@@ -14,8 +14,8 @@ class HipConfig:
     r_origin: float = 0.05
     r_ins: float = 0.025
     r_relay: float = 0.05
-    tendon_friction: float = 0.05
-    tendon_range: list = field(default_factory=lambda: [0, 0.2])
+    ligament_friction: float = 0.05
+    ligament_range: list = field(default_factory=lambda: [0, 0.2])
 
 class LigamentousHipBuilder:
     def __init__(self):
@@ -135,9 +135,9 @@ class LigamentousHipBuilder:
                 spatial.wrap_geom("sphere", f"relay_{i}")
                 spatial.wrap_site(f"ins_{j}")
                 
-                spatial.frictionloss = self.config.tendon_friction
+                spatial.frictionloss = self.config.ligament_friction
                 spatial.limited = True
-                spatial.range = self.config.tendon_range
+                spatial.range = self.config.ligament_range
 
 # --- Execution ---
 builder = LigamentousHipBuilder()
