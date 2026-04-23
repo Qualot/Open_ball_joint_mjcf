@@ -1,122 +1,148 @@
 import mujoco
 import numpy as np
+from dataclasses import dataclass, field
 
-# 1. Spec object initialization
-spec = mujoco.MjSpec()
-spec.modelname = "hip_ligamentous_joint_actuated"
-
-# 2. Global settings
-# spec.compiler.angle = "degree"
-# spec.compiler.coordinate = "local"
-
-spec.default.site.size = [0.002, 0.002, 0.002]
-spec.default.site.rgba = [0.5, 0.5, 0.5, 1]
-spec.default.tendon.width = 0.0005
-spec.default.tendon.rgba = [0.9, 0.9, 0.9, 0.25]
-
-# 3. Worldbody and lighting
-world = spec.worldbody
-world.add_light(diffuse=[.5, .5, .5], pos=[0, 0, 1], dir=[90, 0, -1])
-world.add_geom(type=mujoco.mjtGeom.mjGEOM_PLANE, size=[1, 1, 0.01], rgba=[.9, .9, .9, 1])
-
-# 4. Pelvis and Base Plate
-pelvis_y = 0
-pelvis_z = 0.7
-frame_size = 0.03
-pelvis_frame = world.add_body(name="pelvis_frame", pos=[0, pelvis_y, pelvis_z], euler=[0, 0, 0])
-pelvis_frame.add_geom(type=mujoco.mjtGeom.mjGEOM_BOX, pos=[0.05-frame_size/2, frame_size/2, -0.1/2-frame_size/2], size=[frame_size/2, frame_size/2, 0.1/2], rgba=[.5, .5, .5, 1])
-pelvis_frame.add_geom(type=mujoco.mjtGeom.mjGEOM_BOX, pos=[-0.05+frame_size/2, frame_size/2, -0.1/2-frame_size/2], size=[frame_size/2, frame_size/2, 0.1/2], rgba=[.5, .5, .5, 1])
-pelvis_frame.add_geom(type=mujoco.mjtGeom.mjGEOM_BOX, pos=[0.05-frame_size/2, 0.13/2, 0.0], size=[frame_size/2, 0.13/2, frame_size/2], rgba=[.5, .5, .5, 1])
-pelvis_frame.add_geom(type=mujoco.mjtGeom.mjGEOM_BOX, pos=[-0.05+frame_size/2, 0.13/2, 0.0], size=[frame_size/2, 0.13/2, frame_size/2], rgba=[.5, .5, .5, 1])
-pelvis_frame.add_geom(type=mujoco.mjtGeom.mjGEOM_BOX, pos=[0, 0.13+frame_size/2, 0.0], size=[0.05, frame_size/2, frame_size/2], rgba=[.5, .5, .5, 1])
-pelvis_frame.add_geom(type=mujoco.mjtGeom.mjGEOM_BOX, pos=[0, frame_size/2, -0.1-frame_size/2], size=[0.05, frame_size/2, frame_size/2], rgba=[.5, .5, .5, 1])
-
-base_y = 0.07
-base_z = -0.05
-base_plate = pelvis_frame.add_body(name="base_plate", pos=[0, base_y, base_z], euler=[45, 0, 0])
-base_plate.add_geom(type=mujoco.mjtGeom.mjGEOM_BOX, 
-                   size=[0.049, 0.075, 0.015], rgba=[.3, .3, .3, 1])
-base_plate.add_geom(name="ligament_origin_geom", type=mujoco.mjtGeom.mjGEOM_CYLINDER, 
-                   pos=[0, 0, -0.015], size=[0.045, 0.005], rgba=[.3, .3, .3, 1])
-
-sites_origin_body = base_plate.add_body(name="sites_origin", pos=[0, 0, -0.02])
-
-# 5. Link parts
-hip_y, hip_z = 0.045, -0.045
-link = world.add_body(name="link", pos=[0, pelvis_y + base_y + hip_y, pelvis_z + base_z + hip_z], euler=[0, 0, 0])
-link.add_joint(name="ball_joint", type=mujoco.mjtJoint.mjJNT_FREE, damping=0.05)
-link.add_geom(name="ligament_insertion_geom", type=mujoco.mjtGeom.mjGEOM_CYLINDER, 
-              pos=[0, 0, -0.05], size=[0.025, 0.005], rgba=[.3, .3, .3, 1])
-link.add_geom(name="sphere", type=mujoco.mjtGeom.mjGEOM_SPHERE, size=[0.04], rgba=[0, .7, .7, 0.5], friction=[0.001, 0.001, 0.001])
-link.add_geom(name="cylinder", type=mujoco.mjtGeom.mjGEOM_CYLINDER, fromto=[0, 0, 0, 0, 0, -0.3], size=[0.01], rgba=[0.7, 0.7, 0.7, 1])
-link.add_geom(name="weight", type=mujoco.mjtGeom.mjGEOM_SPHERE, pos=[0, 0, -0.3], size=[0.08], mass=5, rgba=[.7, .7, .7, 1])
-
-sites_ins_body = link.add_body(name="sites_insertion", pos=[0, 0, -0.045])
-sites_relay_body = link.add_body(name="sites_relay")
-
-# 6. Site and Tendon procedural generation
-num_sites = 12
-r_origin = 0.05
-r_ins = 0.025
-r_relay = 0.05
-
-
-origin_sites = []
-ins_sites = []
-
-for i in range(num_sites):
-    angle = 2 * np.pi * i / num_sites
-    cos_a, sin_a = np.cos(angle), np.sin(angle)
+@dataclass
+class HipConfig:
+    """Configuration parameters for the hip model"""
+    model_name: str = "hip_ligamentous_joint_actuated"
+    pelvis_pos: list = field(default_factory=lambda: [0, 0, 0.7])
+    frame_size: float = 0.03
     
-    # Origin sites
-    s_orig = sites_origin_body.add_site(
-        name=f"origin_{i}", 
-        pos=[r_origin * cos_a, r_origin * sin_a, 0]
-    )
-    origin_sites.append(s_orig)
-    
-    # Insertion sites
-    s_ins = sites_ins_body.add_site(
-        name=f"ins_{i}", 
-        pos=[r_ins * cos_a, r_ins * sin_a, 0]
-    )
-    ins_sites.append(s_ins)
-    
-    # Relay sites Green for visualization
-    s_relay = sites_relay_body.add_site(
-        name=f"relay_{i}", 
-        pos=[r_relay * cos_a, r_relay * sin_a, 0],
-        rgba=[0, 1, 0, 1]
-    )
+    # Ligament parameters
+    num_sites: int = 12
+    r_origin: float = 0.05
+    r_ins: float = 0.025
+    r_relay: float = 0.05
+    tendon_friction: float = 0.05
+    tendon_range: list = field(default_factory=lambda: [0, 0.2])
 
-    if i == 0:
-        s_orig.rgba = [0, 0, 1, 1] # Blue for the first origin site
-        s_ins.rgba =  [0, 0, 1, 1] # Blue for the first insertion site
-        s_relay.rgba =  [0, 0, 1, 1] # Blue for the first relay site
+class LigamentousHipBuilder:
+    def __init__(self):
+        self.spec = mujoco.MjSpec()
+        self.config = HipConfig()
+        self.spec.modelname = self.config.model_name
+        
+    def build(self):
+        """Main build pipeline"""
+        self._set_defaults()
+        self._setup_world()
+        
+        # Build hierarchy
+        pelvis_frame = self._add_pelvis_frame()
+        base_plate = self._add_base_plate(pelvis_frame)
+        sites_origin_body = self._add_origin_container(base_plate)
+        
+        link = self._add_link_parts()
+        
+        # Procedural generation
+        self._generate_ligaments(sites_origin_body, link)
+        
+        return self.spec
 
+    def _set_defaults(self):
+        """Set global defaults for sites and tendons"""
+        self.spec.default.site.size = [0.002, 0.002, 0.002]
+        self.spec.default.site.rgba = [0.5, 0.5, 0.5, 1]
+        self.spec.default.tendon.width = 0.0005
+        self.spec.default.tendon.rgba = [0.9, 0.9, 0.9, 0.25]
 
-# Tendon generation: Hall connection
-separates = num_sites
-for i in range(num_sites):
-    for j in np.arange(-num_sites/separates,num_sites/separates+1,1): # Connect each origin to 3-4 insertions around the circle
-        j = j + i
-        if j < 0:
-            j = j + num_sites
-        if j >= num_sites:
-            j = j % num_sites
-        j = int(j)
-        spatial = spec.add_tendon(name=f"lig_{i}_{j}")
-        spatial.wrap_site(f"origin_{i}")
-        spatial.wrap_geom("sphere", f"relay_{i}")
-        spatial.wrap_site(f"ins_{j}")
+    def _setup_world(self):
+        """Add lighting and floor"""
+        world = self.spec.worldbody
+        world.add_light(diffuse=[.5, .5, .5], pos=[0, 0, 1], dir=[90, 0, -1])
+        world.add_geom(type=mujoco.mjtGeom.mjGEOM_PLANE, size=[1, 1, 0.01], rgba=[.9, .9, .9, 1])
 
-        spatial.frictionloss = 0.05 # Add some friction loss to the tendon
+    def _add_pelvis_frame(self):
+        """Create the static pelvis frame structure"""
+        f_size = self.config.frame_size
+        frame = self.spec.worldbody.add_body(name="pelvis_frame", pos=self.config.pelvis_pos)
+        
+        # Add frame geoms (boxes)
+        frame.add_geom(type=mujoco.mjtGeom.mjGEOM_BOX, pos=[0.05-f_size/2, f_size/2, -0.1/2-f_size/2], size=[f_size/2, f_size/2, 0.1/2], rgba=[.5, .5, .5, 1])
+        frame.add_geom(type=mujoco.mjtGeom.mjGEOM_BOX, pos=[-0.05+f_size/2, f_size/2, -0.1/2-f_size/2], size=[f_size/2, f_size/2, 0.1/2], rgba=[.5, .5, .5, 1])
+        frame.add_geom(type=mujoco.mjtGeom.mjGEOM_BOX, pos=[0.05-f_size/2, 0.13/2, 0.0], size=[f_size/2, 0.13/2, f_size/2], rgba=[.5, .5, .5, 1])
+        frame.add_geom(type=mujoco.mjtGeom.mjGEOM_BOX, pos=[-0.05+f_size/2, 0.13/2, 0.0], size=[f_size/2, 0.13/2, f_size/2], rgba=[.5, .5, .5, 1])
+        frame.add_geom(type=mujoco.mjtGeom.mjGEOM_BOX, pos=[0, 0.13+f_size/2, 0.0], size=[0.05, f_size/2, f_size/2], rgba=[.5, .5, .5, 1])
+        frame.add_geom(type=mujoco.mjtGeom.mjGEOM_BOX, pos=[0, f_size/2, -0.1-f_size/2], size=[0.05, f_size/2, f_size/2], rgba=[.5, .5, .5, 1])
+        return frame
 
-        # enable limited range for the tendon
-        spatial.limited = True
-        # range = [min, max] in meters, representing the length limits of the tendon
-        spatial.range = [0, 0.2]
+    def _add_base_plate(self, parent):
+        """Add the base plate and ligament origin cylinder"""
+        base = parent.add_body(name="base_plate", pos=[0, 0.07, -0.05], euler=[45, 0, 0])
+        base.add_geom(type=mujoco.mjtGeom.mjGEOM_BOX, size=[0.049, 0.075, 0.015], rgba=[.3, .3, .3, 1])
+        base.add_geom(name="ligament_origin_geom", type=mujoco.mjtGeom.mjGEOM_CYLINDER, 
+                      pos=[0, 0, -0.015], size=[0.045, 0.005], rgba=[.3, .3, .3, 1])
+        return base
 
-# 7. Compile the model
+    def _add_origin_container(self, parent):
+        """Virtual body to hold origin sites"""
+        return parent.add_body(name="sites_origin", pos=[0, 0, -0.02])
+
+    def _add_link_parts(self):
+        """Create the leg/link body with its joint and geoms"""
+        # Calculate position relative to world
+        pos = [0, self.config.pelvis_pos[1] + 0.07 + 0.045, self.config.pelvis_pos[2] - 0.05 - 0.045]
+        
+        link = self.spec.worldbody.add_body(name="link", pos=pos)
+        link.add_joint(name="ball_joint", type=mujoco.mjtJoint.mjJNT_FREE, damping=0.05)
+        
+        # Link geoms
+        link.add_geom(name="ligament_insertion_geom", type=mujoco.mjtGeom.mjGEOM_CYLINDER, 
+                      pos=[0, 0, -0.05], size=[0.025, 0.005], rgba=[.3, .3, .3, 1])
+        link.add_geom(name="sphere", type=mujoco.mjtGeom.mjGEOM_SPHERE, size=[0.04], 
+                      rgba=[0, .7, .7, 0.5], friction=[0.001, 0.001, 0.001])
+        link.add_geom(name="cylinder", type=mujoco.mjtGeom.mjGEOM_CYLINDER, 
+                      fromto=[0, 0, 0, 0, 0, -0.3], size=[0.01], rgba=[0.7, 0.7, 0.7, 1])
+        link.add_geom(name="weight", type=mujoco.mjtGeom.mjGEOM_SPHERE, 
+                      pos=[0, 0, -0.3], size=[0.08], mass=5, rgba=[.7, .7, .7, 1])
+        return link
+
+    def _generate_ligaments(self, origin_body, link_body):
+        """Create sites and tendons procedurally"""
+        # Auxiliary bodies for site organization
+        ins_container = link_body.add_body(name="sites_insertion", pos=[0, 0, -0.045])
+        relay_container = link_body.add_body(name="sites_relay")
+        
+        num = self.config.num_sites
+        
+        # 1. Create Sites
+        for i in range(num):
+            angle = 2 * np.pi * i / num
+            cos_a, sin_a = np.cos(angle), np.sin(angle)
+            
+            # Origin sites
+            s_orig = origin_body.add_site(name=f"origin_{i}", 
+                                          pos=[self.config.r_origin * cos_a, self.config.r_origin * sin_a, 0])
+            # Insertion sites
+            ins_container.add_site(name=f"ins_{i}", 
+                                   pos=[self.config.r_ins * cos_a, self.config.r_ins * sin_a, 0])
+            # Relay sites
+            s_relay = relay_container.add_site(name=f"relay_{i}", 
+                                               pos=[self.config.r_relay * cos_a, self.config.r_relay * sin_a, 0],
+                                               rgba=[0, 1, 0, 1])
+            
+            if i == 0:
+                s_orig.rgba = s_relay.rgba = [0, 0, 1, 1] # Highlight first set
+
+        # 2. Create Tendons
+        for i in range(num):
+            # Connect each origin to nearby insertions
+            for offset in [-1, 0, 1]:
+                j = (i + offset) % num
+                spatial = self.spec.add_tendon(name=f"lig_{i}_{j}")
+                spatial.wrap_site(f"origin_{i}")
+                spatial.wrap_geom("sphere", f"relay_{i}")
+                spatial.wrap_site(f"ins_{j}")
+                
+                spatial.frictionloss = self.config.tendon_friction
+                spatial.limited = True
+                spatial.range = self.config.tendon_range
+
+# --- Execution ---
+builder = LigamentousHipBuilder()
+spec = builder.build()
 model = spec.compile()
-print(spec.to_xml()) # XML output for verification
+
+# Verification
+print(spec.to_xml())
