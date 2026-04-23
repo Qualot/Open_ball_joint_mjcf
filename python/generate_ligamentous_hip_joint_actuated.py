@@ -118,7 +118,7 @@ class LigamentousHipBuilder:
         link.add_geom(name="cylinder", type=mujoco.mjtGeom.mjGEOM_CYLINDER, 
                       fromto=[0, 0, 0, 0, 0, -0.3], size=[0.01], rgba=[0.7, 0.7, 0.7, 1])
         link.add_geom(name="weight", type=mujoco.mjtGeom.mjGEOM_SPHERE, 
-                      pos=[0, 0, -0.3], size=[0.08], mass=5, rgba=[.7, .7, .7, 1])
+                      pos=[0, 0, -0.3], size=[0.08], mass=5, rgba=[.2, .2, .2, 1])
         return link
 
     def _add_relay_sites(self, parent_body):
