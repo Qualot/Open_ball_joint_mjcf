@@ -47,9 +47,9 @@ link = world.add_body(name="link", pos=[0, pelvis_y + base_y + hip_y, pelvis_z +
 link.add_joint(name="ball_joint", type=mujoco.mjtJoint.mjJNT_FREE, damping=0.05)
 link.add_geom(name="ligament_insertion_geom", type=mujoco.mjtGeom.mjGEOM_CYLINDER, 
               pos=[0, 0, -0.05], size=[0.025, 0.005], rgba=[.3, .3, .3, 1])
-link.add_geom(name="sphere", type=mujoco.mjtGeom.mjGEOM_SPHERE, size=[0.04], rgba=[0, .7, .7, 0.5])
+link.add_geom(name="sphere", type=mujoco.mjtGeom.mjGEOM_SPHERE, size=[0.04], rgba=[0, .7, .7, 0.5], friction=[0.001, 0.001, 0.001])
 link.add_geom(name="cylinder", type=mujoco.mjtGeom.mjGEOM_CYLINDER, fromto=[0, 0, 0, 0, 0, -0.3], size=[0.01], rgba=[0.7, 0.7, 0.7, 1])
-# link.add_geom(name="weight", type=mujoco.mjtGeom.mjGEOM_SPHERE, pos=[0, 0, -0.3], size=[0.08], mass=0.05, rgba=[.7, .7, .7, 1])
+link.add_geom(name="weight", type=mujoco.mjtGeom.mjGEOM_SPHERE, pos=[0, 0, -0.3], size=[0.08], mass=5, rgba=[.7, .7, .7, 1])
 
 sites_ins_body = link.add_body(name="sites_insertion", pos=[0, 0, -0.045])
 sites_relay_body = link.add_body(name="sites_relay")
