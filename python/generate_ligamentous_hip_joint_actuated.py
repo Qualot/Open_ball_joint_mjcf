@@ -134,13 +134,13 @@ class LigamentousHipBuilder:
             cos_a, sin_a = np.cos(angle), np.sin(angle)
             
             # Origin sites
-            origin_body.add_site(name=f"origin_{i}", 
+            origin_body.add_site(name=f"lig_origin_{i}", 
                                 pos=[self.config.r_origin * cos_a, self.config.r_origin * sin_a, 0],
                                 rgba=[0.5, 0.5, 0.5, 1] if i != 0 else [0, 0, 1, 1]
                                 )
             
             # Insertion sites
-            ins_container.add_site(name=f"ins_{i}", 
+            ins_container.add_site(name=f"lig_insertion_{i}", 
                                    pos=[self.config.r_ins * cos_a, self.config.r_ins * sin_a, 0],
                                    rgba=[0.5, 0.5, 0.5, 1] if i != 0 else [0, 0, 1, 1])
 
@@ -149,10 +149,10 @@ class LigamentousHipBuilder:
             for offset in [-1, 0, 1]:
                 j = (i + offset) % num
                 spatial = self.spec.add_tendon(name=f"lig_{i}_{j}")
-                spatial.wrap_site(f"origin_{i}")
+                spatial.wrap_site(f"lig_origin_{i}")
                 # Reusing the relay site name (or object)
                 spatial.wrap_geom("sphere", f"relay_{i}") 
-                spatial.wrap_site(f"ins_{j}")
+                spatial.wrap_site(f"lig_insertion_{j}")
                 
                 spatial.frictionloss = self.config.ligament_friction
                 spatial.limited = True
