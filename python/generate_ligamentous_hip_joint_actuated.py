@@ -17,6 +17,16 @@ class HipConfig:
     ligament_friction: float = 0.05
     ligament_range: list = field(default_factory=lambda: [0, 0.2])
 
+    #Tendon parameters
+    num_tendon_origins: int = 8
+    num_tendon_insertions: int = 4
+    r_tendon_ins: float = 0.05
+    tendon_origin_points = np.array([[0.05, 0.05, -0.09], [0.05, 0.115, -0.025], 
+                              [0.03, 0.13+frame_size, -frame_size/2], [-0.03, 0.13+frame_size, -frame_size/2], 
+                              [-0.05, 0.115, -0.025], [-0.05, 0.05, -0.09], 
+                              [-0.03, frame_size, -0.1-frame_size], [0.03, frame_size, -0.1-frame_size]])
+
+
 class LigamentousHipBuilder:
     def __init__(self):
         self.spec = mujoco.MjSpec()
@@ -46,7 +56,7 @@ class LigamentousHipBuilder:
         self._generate_ligaments(sites_origin_body, link)
         
         # 3. (Optional) Use them for motor tendons later
-        # self._add_motor_tendons(...)
+        self._add_motor_tendons(pelvis_frame, link)
         return self.spec
 
     def _set_defaults(self):
@@ -125,8 +135,8 @@ class LigamentousHipBuilder:
             self.relay_sites.append(s_relay)
 
     def _generate_ligaments(self, origin_body, link_body):
-        """Create sites and tendons using pre-generated relay sites"""
-        ins_container = link_body.add_body(name="sites_insertion", pos=[0, 0, -0.045])
+        """Create sites and ligaments using pre-generated relay sites"""
+        ins_container = link_body.add_body(name="sites_ligament_insertion", pos=[0, 0, -0.045])
         num = self.config.num_sites
         
         for i in range(num):
@@ -157,7 +167,40 @@ class LigamentousHipBuilder:
                 spatial.frictionloss = self.config.ligament_friction
                 spatial.limited = True
                 spatial.range = self.config.ligament_range
+                
+    def _add_motor_tendons(self, origin_body, link_body):
+        """Create sites and tendons using pre-generated relay sites"""
+        ins_container = link_body.add_body(name="sites_tendon_insertion", pos=[0, 0, -0.1])
+        num = self.config.num_tendon_origins
+        
+        for i in range(num):
+            angle = 2 * np.pi * i / num
+            cos_a, sin_a = np.cos(angle), np.sin(angle)
+            
+            # Origin sites
+            origin_body.add_site(name=f"tendon_origin_{i}", 
+                                pos=self.config.tendon_origin_points[i],
+                                rgba=[1, 0, 0, 1] if i != 0 else [0, 0, 1, 1]
+                                )
+            
+        #     # Insertion sites
+        #     ins_container.add_site(name=f"tendon_insertion_{i}", 
+        #                            pos=[self.config.r_tendon_ins * cos_a, self.config.r_tendon_ins * sin_a, 0],
+        #                            rgba=[0.5, 0.5, 0.5, 1] if i != 0 else [0, 0, 1, 1])
 
+        # # Tendon connection logic
+        # for i in range(num):
+        #     for offset in [-1, 0, 1]:
+        #         j = (i + offset) % num
+        #         spatial = self.spec.add_tendon(name=f"lig_{i}_{j}")
+        #         spatial.wrap_site(f"lig_origin_{i}")
+        #         # Reusing the relay site name (or object)
+        #         spatial.wrap_geom("sphere", f"relay_{i}") 
+        #         spatial.wrap_site(f"lig_insertion_{j}")
+                
+        #         spatial.frictionloss = self.config.ligament_friction
+        #         spatial.limited = True
+        #         spatial.range = self.config.ligament_range
 
 def main():
     # --- Execution ---
