@@ -50,6 +50,7 @@ class LigamentousHipBuilder:
         pelvis_frame = self._add_pelvis_frame(base_link)
         socket_bottom = self._add_socket_bottom(pelvis_frame)
         self._add_socket_sensors(socket_bottom)
+        self._add_socket_walls(socket_bottom)
         self._add_convex_socket(socket_bottom)
 
         sites_origin_body = self._add_origin_container(socket_bottom)
@@ -109,12 +110,29 @@ class LigamentousHipBuilder:
 
     def _add_socket_walls(self, parent):
         """Add the socket walls to constrain the floating socket"""
+        socket_width = 0.09
+        space_from_socket = 0.001
+        wall_width = 0.1
         wall_thickness = 0.005
-        wall_height = 0.1
-        wall_size = [0.07, wall_thickness, wall_height]
-        positions = [[0, 0.07, wall_height/2], [0, -0.07, wall_height/2], [0.07, 0, wall_height/2], [-0.07, 0, wall_height/2]]
-        for i, pos in enumerate(positions):
-            parent.add_geom(type=mujoco.mjtGeom.mjGEOM_BOX, pos=pos, size=wall_size, rgba=[.3, .3, .3, 1])
+        wall_height = 0.038
+        wall_size = [wall_thickness/2, wall_width/2, wall_height/2]
+        wall_position = [socket_width/2 + space_from_socket+wall_thickness/2, 0, wall_height/2]
+
+        ceiling_width = 0.1
+        ceiling_thickness = 0.002
+        ceiling_depth = 0.012
+        ceiling_size = [ceiling_depth/2, ceiling_width/2, ceiling_thickness/2]
+        ceiling_position = [socket_width/2 + space_from_socket+wall_thickness-ceiling_depth/2, 0, wall_height-ceiling_thickness/2]
+
+        for i in range(4):
+            angle = 2 * np.pi * i / 4
+            cos_a, sin_a = np.cos(angle), np.sin(angle)
+            rot = [[cos_a, -sin_a, 0], [sin_a, cos_a, 0], [0, 0, 1]]
+            current_wall_position = np.dot(rot, wall_position)
+            current_ceiling_position = np.dot(rot, ceiling_position)
+            parent.add_geom(type=mujoco.mjtGeom.mjGEOM_BOX, pos=np.dot(rot, wall_position), euler=[0, 0, np.rad2deg(angle)], size=wall_size, rgba=[.3, .3, .3, .1])
+            parent.add_geom(type=mujoco.mjtGeom.mjGEOM_BOX, pos=np.dot(rot, ceiling_position), euler=[0, 0, np.rad2deg(angle)], size=ceiling_size, rgba=[.3, .3, .3, .1])
+
         return
 
     def _add_socket_sensors(self, parent):
