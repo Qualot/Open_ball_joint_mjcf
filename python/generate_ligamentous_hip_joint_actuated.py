@@ -112,8 +112,6 @@ class LigamentousHipBuilder:
         """Add the base plate and ligament origin cylinder"""
         base = parent.add_body(name="socket_bottom", pos=[0, 0.08, -0.08], euler=[-135, 0, 0])
         base.add_geom(type=mujoco.mjtGeom.mjGEOM_BOX, pos=[0, 0, 0.005], size=[0.05, 0.05, 0.005], rgba=[.3, .3, .3, 1])
-        # base.add_geom(name="ligament_origin_geom", type=mujoco.mjtGeom.mjGEOM_CYLINDER, 
-        #               pos=[0, 0, 0.005], size=[0.045, 0.005], rgba=[.3, .3, .3, 1])
         return base
 
     def _add_origin_container(self, parent):
