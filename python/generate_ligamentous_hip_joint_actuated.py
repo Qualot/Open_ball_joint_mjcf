@@ -49,6 +49,7 @@ class LigamentousHipBuilder:
         base_link = self.spec.worldbody.add_body(name="base_link", pos=self.config.base_link_pos)
         pelvis_frame = self._add_pelvis_frame(base_link)
         socket_bottom = self._add_socket_bottom(pelvis_frame)
+        self._add_socket_sensors(socket_bottom)
         self._add_convex_socket(socket_bottom)
 
         sites_origin_body = self._add_origin_container(socket_bottom)
@@ -101,10 +102,21 @@ class LigamentousHipBuilder:
         return frame
 
     def _add_socket_bottom(self, parent):
-        """Add the base plate and ligament origin cylinder"""
+        """Add the base plate"""
         bottom_plate = parent.add_body(name="socket_bottom", pos=[0, 0.08, -0.08], euler=[-135, 0, 0])
         bottom_plate.add_geom(type=mujoco.mjtGeom.mjGEOM_BOX, pos=[0, 0, 0.005], size=[0.05, 0.05, 0.005], rgba=[.3, .3, .3, 1])
         return bottom_plate
+
+    def _add_socket_sensors(self, parent):
+        """Add sensors to the socket for joint interaction force"""
+        sensors = []
+        r = 0.07 /np.sqrt(2)  # Place sensors at the corners of a square around the center
+        for i in range(4):
+            theta = 2 * np.pi * i / 4 + np.pi / 4  # Offset by 45 degrees for better coverage
+            sensors.append(parent.add_body(name=f"socket_bottom_{i}", pos=[r * np.cos(theta), r * np.sin(theta), 0.015], euler=[0, 0, 0]))
+            sensors[-1].add_geom(type=mujoco.mjtGeom.mjGEOM_CYLINDER, size=[0.01, 0.005], rgba=[1, 1, 1, 1])
+            sensors[-1].add_site(name=f"force_sensor_{i}", pos=[0, 0, 0.02], size=[0.01], rgba=[1, 0, 0, 0])
+        return sensors
 
     def _add_origin_container(self, parent):
         """Virtual body to hold origin sites"""
