@@ -110,7 +110,7 @@ class LigamentousHipBuilder:
 
     def _add_socket_bottom(self, parent):
         """Add the base plate and ligament origin cylinder"""
-        base = parent.add_body(name="socket_bottom", pos=[0, 0.07, -0.05], euler=[45, 0, 0])
+        base = parent.add_body(name="socket_bottom", pos=[0, 0.06939, -0.06939], euler=[45, 0, 0])
         base.add_geom(type=mujoco.mjtGeom.mjGEOM_BOX, size=[0.049, 0.075, 0.015], rgba=[.3, .3, .3, 1])
         base.add_geom(name="ligament_origin_geom", type=mujoco.mjtGeom.mjGEOM_CYLINDER, 
                       pos=[0, 0, -0.015], size=[0.045, 0.005], rgba=[.3, .3, .3, 1])
@@ -145,7 +145,8 @@ class LigamentousHipBuilder:
         r_ten_ins = self.config.r_tendon_ins
 
         # Calculate position relative to world
-        pos = [0, self.config.base_link_pos[1] + 0.07 + 0.045, self.config.base_link_pos[2] - 0.05 - 0.045]
+        #pos = [0, self.config.base_link_pos[1] + 0.07 + 0.045, self.config.base_link_pos[2] - 0.05 - 0.045]
+        pos = [0, self.config.base_link_pos[1] + 0.12455, self.config.base_link_pos[2] - 0.12455]
         
         link = self.spec.worldbody.add_body(name="link", pos=pos)
         link.add_joint(name="ball_joint", type=mujoco.mjtJoint.mjJNT_FREE, damping=0.05)
