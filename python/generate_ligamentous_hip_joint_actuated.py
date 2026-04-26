@@ -25,10 +25,10 @@ class HipConfig:
     num_tendon_origins: int = 8
     num_tendon_insertions: int = 4
     r_tendon_ins: float = 0.025
-    tendon_origin_points = np.array([[0.05, 0.05, -0.09], [0.05, 0.115, -0.025], 
-                              [0.03, 0.13+frame_size, -frame_size/2], [-0.03, 0.13+frame_size, -frame_size/2], 
-                              [-0.05, 0.115, -0.025], [-0.05, 0.05, -0.09], 
-                              [-0.03, frame_size, -0.1-frame_size], [0.03, frame_size, -0.1-frame_size]])
+    tendon_origin_points = np.array([[0.05, 0.05, -0.11], [0.05, 0.115, -0.045], 
+                              [0.03, 0.13+frame_size, -frame_size], [-0.03, 0.13+frame_size, -frame_size], 
+                              [-0.05, 0.115, -0.045], [-0.05, 0.05, -0.11], 
+                              [-0.03, frame_size, -0.13-frame_size], [0.03, frame_size, -0.13-frame_size]])
 
 
 class LigamentousHipBuilder:
@@ -91,7 +91,6 @@ class LigamentousHipBuilder:
         frame.add_geom(type=mujoco.mjtGeom.mjGEOM_BOX, pos=[0, 0.13+f_size/2, 0.0], size=[0.05, f_size/2, f_size/2], rgba=[.5, .5, .5, 1])
         frame.add_geom(type=mujoco.mjtGeom.mjGEOM_BOX, pos=[0, f_size/2, -0.1-f_size/2], size=[0.05, f_size/2, f_size/2], rgba=[.5, .5, .5, 1])
 
-
         # 1. Load the external spec
         pelvis_file = f"../{self.config.assets_dir}/{self.config.pelvis_name}.xml"
         pelvis_spec = mujoco.MjSpec.from_file(pelvis_file)
@@ -105,8 +104,7 @@ class LigamentousHipBuilder:
         pelvis_pos.attach_body(pelvis_source, 'L_pelvis_', '')  # Attach the new body to the frame for correct positioning
         
         # Optional: If you want to change its position after copying
-        # new_socket_body.pos = [0, 0, 0] 
-
+        # new_pelvis_body.pos = [0, 0, 0] 
 
         return frame
 
