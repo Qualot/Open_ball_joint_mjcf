@@ -46,10 +46,10 @@ class LigamentousHipBuilder:
         
         # Build hierarchy
         pelvis_frame = self._add_pelvis_frame()
-        base_plate = self._add_base_plate(pelvis_frame)
-        self._add_convex_socket(base_plate)
+        socket_bottom = self._add_socket_bottom(pelvis_frame)
+        self._add_convex_socket(socket_bottom)
 
-        sites_origin_body = self._add_origin_container(base_plate)
+        sites_origin_body = self._add_origin_container(socket_bottom)
         
         link = self._add_link_parts()
         
@@ -91,9 +91,9 @@ class LigamentousHipBuilder:
         frame.add_geom(type=mujoco.mjtGeom.mjGEOM_BOX, pos=[0, f_size/2, -0.1-f_size/2], size=[0.05, f_size/2, f_size/2], rgba=[.5, .5, .5, 1])
         return frame
 
-    def _add_base_plate(self, parent):
+    def _add_socket_bottom(self, parent):
         """Add the base plate and ligament origin cylinder"""
-        base = parent.add_body(name="base_plate", pos=[0, 0.07, -0.05], euler=[45, 0, 0])
+        base = parent.add_body(name="socket_bottom", pos=[0, 0.07, -0.05], euler=[45, 0, 0])
         base.add_geom(type=mujoco.mjtGeom.mjGEOM_BOX, size=[0.049, 0.075, 0.015], rgba=[.3, .3, .3, 1])
         base.add_geom(name="ligament_origin_geom", type=mujoco.mjtGeom.mjGEOM_CYLINDER, 
                       pos=[0, 0, -0.015], size=[0.045, 0.005], rgba=[.3, .3, .3, 1])
