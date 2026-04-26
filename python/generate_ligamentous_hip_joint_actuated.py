@@ -7,6 +7,7 @@ class HipConfig:
     """Configuration parameters for the hip model"""
     model_name: str = "hip_ligamentous_joint_actuated"
     assets_dir: str = "assets"
+    pelvis_name: str = "pelvis_0"
     socket_name: str = "socket_0"
 
     base_link_pos: list = field(default_factory=lambda: [0, 0, 0.7])
@@ -80,16 +81,33 @@ class LigamentousHipBuilder:
 
     def _add_pelvis_frame(self, parent):
         """Create the static pelvis frame structure"""
-        f_size = self.config.frame_size
         frame = parent.add_body(name="pelvis_frame", pos=[0, 0, 0], euler=[0, 0, 0])
-        
         # Add frame geoms (boxes)
+        f_size = self.config.frame_size
         frame.add_geom(type=mujoco.mjtGeom.mjGEOM_BOX, pos=[0.05-f_size/2, f_size/2, -0.1/2-f_size/2], size=[f_size/2, f_size/2, 0.1/2], rgba=[.5, .5, .5, 1])
         frame.add_geom(type=mujoco.mjtGeom.mjGEOM_BOX, pos=[-0.05+f_size/2, f_size/2, -0.1/2-f_size/2], size=[f_size/2, f_size/2, 0.1/2], rgba=[.5, .5, .5, 1])
         frame.add_geom(type=mujoco.mjtGeom.mjGEOM_BOX, pos=[0.05-f_size/2, 0.13/2, 0.0], size=[f_size/2, 0.13/2, f_size/2], rgba=[.5, .5, .5, 1])
         frame.add_geom(type=mujoco.mjtGeom.mjGEOM_BOX, pos=[-0.05+f_size/2, 0.13/2, 0.0], size=[f_size/2, 0.13/2, f_size/2], rgba=[.5, .5, .5, 1])
         frame.add_geom(type=mujoco.mjtGeom.mjGEOM_BOX, pos=[0, 0.13+f_size/2, 0.0], size=[0.05, f_size/2, f_size/2], rgba=[.5, .5, .5, 1])
         frame.add_geom(type=mujoco.mjtGeom.mjGEOM_BOX, pos=[0, f_size/2, -0.1-f_size/2], size=[0.05, f_size/2, f_size/2], rgba=[.5, .5, .5, 1])
+
+
+        # 1. Load the external spec
+        pelvis_file = f"../{self.config.assets_dir}/{self.config.pelvis_name}.xml"
+        pelvis_spec = mujoco.MjSpec.from_file(pelvis_file)
+        
+        # 2. Get the root body from the external spec
+        pelvis_source = pelvis_spec.body(f"{self.config.pelvis_name}")  # Assuming the body in the XML is named 'pelvis_0'
+        pelvis_pos = parent.add_frame(name="pelvis_frame", pos=[0, 0, 0], euler=[0, 0, 0])
+        
+        # 3. Create a new body in our current spec and copy EVERYTHING from the source
+        # This will copy geoms, child bodies, sites, etc.
+        pelvis_pos.attach_body(pelvis_source, 'L_pelvis_', '')  # Attach the new body to the frame for correct positioning
+        
+        # Optional: If you want to change its position after copying
+        # new_socket_body.pos = [0, 0, 0] 
+
+
         return frame
 
     def _add_socket_bottom(self, parent):
