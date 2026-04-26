@@ -1,0 +1,1 @@
+the python/generating~.py codes executes attach_body() method to merge external .xml file of Open_ball_joint_mjcf/assets/ directory. 
