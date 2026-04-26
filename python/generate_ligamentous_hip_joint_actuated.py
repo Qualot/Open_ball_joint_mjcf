@@ -103,6 +103,28 @@ class LigamentousHipBuilder:
         """Virtual body to hold origin sites"""
         return parent.add_body(name="sites_origin", pos=[0, 0, -0.02])
 
+    def _add_convex_socket(self, parent_body):
+        """Load an external MJCF socket and attach it to the parent body"""
+        # 1. Load the external spec
+        socket_file = f"../{self.config.assets_dir}/{self.config.socket_name}.xml"
+        socket_spec = mujoco.MjSpec.from_file(socket_file)
+        
+        # 2. Get the root body from the external spec
+        # (Usually socket_spec.worldbody.bodies[0] is the body defined in the XML)
+        # socket_source = socket_spec.worldbody.bodies[0]
+        socket_source = socket_spec.body('socket_0')  # Assuming the body in the XML is named 'socket_0'
+        socket_pos = parent_body.add_frame(name="socket_frame", pos=[0, 0, -0.015], euler=[180, 0, 0])
+        
+        # 3. Create a new body in our current spec and copy EVERYTHING from the source
+        # This will copy geoms, child bodies, sites, etc.
+        #new_socket_body = parent_body.attach_body(socket_source, prefix='socket', suffix='')
+        socket_pos.attach_body(socket_source, 'L_hip_', '')  # Attach the new body to the frame for correct positioning
+        
+        # Optional: If you want to change its position after copying
+        # new_socket_body.pos = [0, 0, 0] 
+        
+        return socket_pos
+
     def _add_link_parts(self):
         """Create the leg/link body with its joint and geoms"""
         r_ten_ins = self.config.r_tendon_ins
@@ -143,27 +165,6 @@ class LigamentousHipBuilder:
             )
             self.relay_sites.append(s_relay)
 
-    def _add_convex_socket(self, parent_body):
-        """Load an external MJCF socket and attach it to the parent body"""
-        # 1. Load the external spec
-        socket_file = f"../{self.config.assets_dir}/{self.config.socket_name}.xml"
-        socket_spec = mujoco.MjSpec.from_file(socket_file)
-        
-        # 2. Get the root body from the external spec
-        # (Usually socket_spec.worldbody.bodies[0] is the body defined in the XML)
-        # socket_source = socket_spec.worldbody.bodies[0]
-        socket_source = socket_spec.body('socket_0')  # Assuming the body in the XML is named 'socket_0'
-        socket_pos = parent_body.add_frame(name="socket_frame", pos=[0, 0, -0.015], euler=[180, 0, 0])
-        
-        # 3. Create a new body in our current spec and copy EVERYTHING from the source
-        # This will copy geoms, child bodies, sites, etc.
-        #new_socket_body = parent_body.attach_body(socket_source, prefix='socket', suffix='')
-        socket_pos.attach_body(socket_source, 'L_hip_', '')  # Attach the new body to the frame for correct positioning
-        
-        # Optional: If you want to change its position after copying
-        # new_socket_body.pos = [0, 0, 0] 
-        
-        return socket_pos
 
     def _generate_ligaments(self, origin_body, link_body):
         """Create sites and ligaments using pre-generated relay sites"""
