@@ -112,7 +112,7 @@ class LigamentousHipBuilder:
         
         # 2. Get the root body from the external spec
         # (Usually socket_spec.worldbody.bodies[0] is the body defined in the XML)
-        socket_source = socket_spec.body('socket_0')  # Assuming the body in the XML is named 'socket_0'
+        socket_source = socket_spec.body(f"{self.config.socket_name}")  # Assuming the body in the XML is named 'socket_0'
         socket_pos = parent_body.add_frame(name="socket_frame", pos=[0, 0, -0.015], euler=[180, 0, 0])
         
         # 3. Create a new body in our current spec and copy EVERYTHING from the source
