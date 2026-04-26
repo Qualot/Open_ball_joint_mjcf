@@ -51,7 +51,7 @@ class LigamentousHipBuilder:
         socket_bottom = self._add_socket_bottom(pelvis_frame)
         self._add_socket_sensors(socket_bottom)
         self._add_socket_walls(socket_bottom)
-        self._add_convex_socket(socket_bottom)
+        self._add_convex_socket(socket_bottom, free_joint=True)
 
         sites_origin_body = self._add_origin_container(socket_bottom)
         
@@ -150,25 +150,35 @@ class LigamentousHipBuilder:
         """Virtual body to hold origin sites"""
         return parent.add_body(name="sites_origin", pos=[0, 0, 0.01], euler=[180, 0, 0])
 
-    def _add_convex_socket(self, parent_body):
+    def _add_convex_socket(self, parent_body, free_joint=False):
         """Load an external MJCF socket and attach it to the parent body"""
         # 1. Load the external spec
         socket_file = f"../{self.config.assets_dir}/{self.config.socket_name}.xml"
         socket_spec = mujoco.MjSpec.from_file(socket_file)
-        
-        # 2. Get the root body from the external spec
-        # (Usually socket_spec.worldbody.bodies[0] is the body defined in the XML)
         socket_source = socket_spec.body(f"{self.config.socket_name}")  # Assuming the body in the XML is named 'socket_0'
-        socket_pos = parent_body.add_frame(name="socket_frame", pos=[0, 0, 0.02], euler=[0, 0, 0])
         
-        # 3. Create a new body in our current spec and copy EVERYTHING from the source
-        # This will copy geoms, child bodies, sites, etc.
-        socket_pos.attach_body(socket_source, 'L_hip_', '')  # Attach the new body to the frame for correct positioning
+        if free_joint: 
+            socket_free_body = self.spec.worldbody.add_body(
+                        name="socket_free_link", 
+                        pos=[0, self.config.base_link_pos[1] + 0.09414, self.config.base_link_pos[2] - 0.09414], 
+                        euler=[-135, 0, 0]
+                    )
+            socket_free_body.add_joint(name="socket_free_ignore", type=mujoco.mjtJoint.mjJNT_FREE)
+            temp_frame = socket_free_body.add_frame(name="socket_attach_frame")
+            temp_frame.attach_body(socket_source, 'L_hip_', '')
+        else:
+            # 2. Get the root body from the external spec
+            # (Usually socket_spec.worldbody.bodies[0] is the body defined in the XML)
+            socket_pos = parent_body.add_frame(name="socket_frame", pos=[0, 0, 0.02], euler=[0, 0, 0])
+            
+            # 3. Create a new body in our current spec and copy EVERYTHING from the source
+            # This will copy geoms, child bodies, sites, etc.
+            socket_pos.attach_body(socket_source, 'L_hip_', '')  # Attach the new body to the frame for correct positioning
+            
+            # Optional: If you want to change its position after copying
+            # new_socket_body.pos = [0, 0, 0] 
         
-        # Optional: If you want to change its position after copying
-        # new_socket_body.pos = [0, 0, 0] 
-        
-        return socket_pos
+        return
 
     def _add_link_parts(self):
         """Create the leg/link body with its joint and geoms"""
