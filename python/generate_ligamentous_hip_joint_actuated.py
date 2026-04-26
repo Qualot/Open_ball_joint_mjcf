@@ -110,15 +110,15 @@ class LigamentousHipBuilder:
 
     def _add_socket_bottom(self, parent):
         """Add the base plate and ligament origin cylinder"""
-        base = parent.add_body(name="socket_bottom", pos=[0, 0.06939, -0.06939], euler=[45, 0, 0])
-        base.add_geom(type=mujoco.mjtGeom.mjGEOM_BOX, size=[0.049, 0.075, 0.015], rgba=[.3, .3, .3, 1])
-        base.add_geom(name="ligament_origin_geom", type=mujoco.mjtGeom.mjGEOM_CYLINDER, 
-                      pos=[0, 0, -0.015], size=[0.045, 0.005], rgba=[.3, .3, .3, 1])
+        base = parent.add_body(name="socket_bottom", pos=[0, 0.08, -0.08], euler=[-135, 0, 0])
+        base.add_geom(type=mujoco.mjtGeom.mjGEOM_BOX, pos=[0, 0, 0.005], size=[0.05, 0.05, 0.005], rgba=[.3, .3, .3, 1])
+        # base.add_geom(name="ligament_origin_geom", type=mujoco.mjtGeom.mjGEOM_CYLINDER, 
+        #               pos=[0, 0, 0.005], size=[0.045, 0.005], rgba=[.3, .3, .3, 1])
         return base
 
     def _add_origin_container(self, parent):
         """Virtual body to hold origin sites"""
-        return parent.add_body(name="sites_origin", pos=[0, 0, -0.02])
+        return parent.add_body(name="sites_origin", pos=[0, 0, 0.01], euler=[180, 0, 0])
 
     def _add_convex_socket(self, parent_body):
         """Load an external MJCF socket and attach it to the parent body"""
@@ -129,7 +129,7 @@ class LigamentousHipBuilder:
         # 2. Get the root body from the external spec
         # (Usually socket_spec.worldbody.bodies[0] is the body defined in the XML)
         socket_source = socket_spec.body(f"{self.config.socket_name}")  # Assuming the body in the XML is named 'socket_0'
-        socket_pos = parent_body.add_frame(name="socket_frame", pos=[0, 0, -0.015], euler=[180, 0, 0])
+        socket_pos = parent_body.add_frame(name="socket_frame", pos=[0, 0, 0.02], euler=[0, 0, 0])
         
         # 3. Create a new body in our current spec and copy EVERYTHING from the source
         # This will copy geoms, child bodies, sites, etc.
