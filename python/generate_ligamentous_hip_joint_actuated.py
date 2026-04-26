@@ -82,14 +82,6 @@ class LigamentousHipBuilder:
     def _add_pelvis_frame(self, parent):
         """Create the static pelvis frame structure"""
         frame = parent.add_body(name="pelvis_frame", pos=[0, 0, 0], euler=[0, 0, 0])
-        # Add frame geoms (boxes)
-        f_size = self.config.frame_size
-        frame.add_geom(type=mujoco.mjtGeom.mjGEOM_BOX, pos=[0.05-f_size/2, f_size/2, -0.1/2-f_size/2], size=[f_size/2, f_size/2, 0.1/2], rgba=[.5, .5, .5, 1])
-        frame.add_geom(type=mujoco.mjtGeom.mjGEOM_BOX, pos=[-0.05+f_size/2, f_size/2, -0.1/2-f_size/2], size=[f_size/2, f_size/2, 0.1/2], rgba=[.5, .5, .5, 1])
-        frame.add_geom(type=mujoco.mjtGeom.mjGEOM_BOX, pos=[0.05-f_size/2, 0.13/2, 0.0], size=[f_size/2, 0.13/2, f_size/2], rgba=[.5, .5, .5, 1])
-        frame.add_geom(type=mujoco.mjtGeom.mjGEOM_BOX, pos=[-0.05+f_size/2, 0.13/2, 0.0], size=[f_size/2, 0.13/2, f_size/2], rgba=[.5, .5, .5, 1])
-        frame.add_geom(type=mujoco.mjtGeom.mjGEOM_BOX, pos=[0, 0.13+f_size/2, 0.0], size=[0.05, f_size/2, f_size/2], rgba=[.5, .5, .5, 1])
-        frame.add_geom(type=mujoco.mjtGeom.mjGEOM_BOX, pos=[0, f_size/2, -0.1-f_size/2], size=[0.05, f_size/2, f_size/2], rgba=[.5, .5, .5, 1])
 
         # 1. Load the external spec
         pelvis_file = f"../{self.config.assets_dir}/{self.config.pelvis_name}.xml"
@@ -110,9 +102,9 @@ class LigamentousHipBuilder:
 
     def _add_socket_bottom(self, parent):
         """Add the base plate and ligament origin cylinder"""
-        base = parent.add_body(name="socket_bottom", pos=[0, 0.08, -0.08], euler=[-135, 0, 0])
-        base.add_geom(type=mujoco.mjtGeom.mjGEOM_BOX, pos=[0, 0, 0.005], size=[0.05, 0.05, 0.005], rgba=[.3, .3, .3, 1])
-        return base
+        bottom_plate = parent.add_body(name="socket_bottom", pos=[0, 0.08, -0.08], euler=[-135, 0, 0])
+        bottom_plate.add_geom(type=mujoco.mjtGeom.mjGEOM_BOX, pos=[0, 0, 0.005], size=[0.05, 0.05, 0.005], rgba=[.3, .3, .3, 1])
+        return bottom_plate
 
     def _add_origin_container(self, parent):
         """Virtual body to hold origin sites"""
