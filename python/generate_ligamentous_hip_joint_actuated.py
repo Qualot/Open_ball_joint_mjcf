@@ -157,8 +157,8 @@ class LigamentousHipBuilder:
         
         # 3. Create a new body in our current spec and copy EVERYTHING from the source
         # This will copy geoms, child bodies, sites, etc.
-        #new_socket_body = parent_body.attach_body(socket_source, 'socket', '')
-        socket_pos.attach_body(socket_source, 'socket', '')  # Attach the new body to the frame for correct positioning
+        #new_socket_body = parent_body.attach_body(socket_source, prefix='socket', suffix='')
+        socket_pos.attach_body(socket_source, 'L_hip_', '')  # Attach the new body to the frame for correct positioning
         
         # Optional: If you want to change its position after copying
         # new_socket_body.pos = [0, 0, 0] 
