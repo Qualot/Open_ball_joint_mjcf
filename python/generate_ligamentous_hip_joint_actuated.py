@@ -8,7 +8,7 @@ class HipConfig:
     model_name: str = "hip_ligamentous_joint_actuated"
     assets_dir: str = "assets"
     pelvis_name: str = "pelvis_0"
-    socket_name: str = "socket_0"
+    socket_name: str = "socket_small_0"
 
     base_link_pos: list = field(default_factory=lambda: [0, 0, 0.7])
     frame_size: float = 0.03
@@ -106,6 +106,16 @@ class LigamentousHipBuilder:
         bottom_plate = parent.add_body(name="socket_bottom", pos=[0, 0.08, -0.08], euler=[-135, 0, 0])
         bottom_plate.add_geom(type=mujoco.mjtGeom.mjGEOM_BOX, pos=[0, 0, 0.005], size=[0.05, 0.05, 0.005], rgba=[.3, .3, .3, 1])
         return bottom_plate
+
+    def _add_socket_walls(self, parent):
+        """Add the socket walls to constrain the floating socket"""
+        wall_thickness = 0.005
+        wall_height = 0.1
+        wall_size = [0.07, wall_thickness, wall_height]
+        positions = [[0, 0.07, wall_height/2], [0, -0.07, wall_height/2], [0.07, 0, wall_height/2], [-0.07, 0, wall_height/2]]
+        for i, pos in enumerate(positions):
+            parent.add_geom(type=mujoco.mjtGeom.mjGEOM_BOX, pos=pos, size=wall_size, rgba=[.3, .3, .3, 1])
+        return
 
     def _add_socket_sensors(self, parent):
         """Add sensors to the socket for joint interaction force"""
