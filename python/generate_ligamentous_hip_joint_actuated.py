@@ -9,7 +9,7 @@ class HipConfig:
     assets_dir: str = "assets"
     socket_name: str = "socket_0"
 
-    pelvis_pos: list = field(default_factory=lambda: [0, 0, 0.7])
+    base_link_pos: list = field(default_factory=lambda: [0, 0, 0.7])
     frame_size: float = 0.03
     
     # Ligament parameters
@@ -45,7 +45,8 @@ class LigamentousHipBuilder:
         self._setup_world()
         
         # Build hierarchy
-        pelvis_frame = self._add_pelvis_frame()
+        base_link = self.spec.worldbody.add_body(name="base_link", pos=self.config.base_link_pos)
+        pelvis_frame = self._add_pelvis_frame(base_link)
         socket_bottom = self._add_socket_bottom(pelvis_frame)
         self._add_convex_socket(socket_bottom)
 
@@ -77,10 +78,10 @@ class LigamentousHipBuilder:
         world.add_light(diffuse=[.5, .5, .5], pos=[0, 0, 1], dir=[90, 0, -1])
         world.add_geom(type=mujoco.mjtGeom.mjGEOM_PLANE, size=[1, 1, 0.01], rgba=[.9, .9, .9, 1])
 
-    def _add_pelvis_frame(self):
+    def _add_pelvis_frame(self, parent):
         """Create the static pelvis frame structure"""
         f_size = self.config.frame_size
-        frame = self.spec.worldbody.add_body(name="pelvis_frame", pos=self.config.pelvis_pos)
+        frame = parent.add_body(name="pelvis_frame", pos=[0, 0, 0], euler=[0, 0, 0])
         
         # Add frame geoms (boxes)
         frame.add_geom(type=mujoco.mjtGeom.mjGEOM_BOX, pos=[0.05-f_size/2, f_size/2, -0.1/2-f_size/2], size=[f_size/2, f_size/2, 0.1/2], rgba=[.5, .5, .5, 1])
@@ -128,7 +129,7 @@ class LigamentousHipBuilder:
         r_ten_ins = self.config.r_tendon_ins
 
         # Calculate position relative to world
-        pos = [0, self.config.pelvis_pos[1] + 0.07 + 0.045, self.config.pelvis_pos[2] - 0.05 - 0.045]
+        pos = [0, self.config.base_link_pos[1] + 0.07 + 0.045, self.config.base_link_pos[2] - 0.05 - 0.045]
         
         link = self.spec.worldbody.add_body(name="link", pos=pos)
         link.add_joint(name="ball_joint", type=mujoco.mjtJoint.mjJNT_FREE, damping=0.05)
