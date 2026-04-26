@@ -6,6 +6,9 @@ from dataclasses import dataclass, field
 class HipConfig:
     """Configuration parameters for the hip model"""
     model_name: str = "hip_ligamentous_joint_actuated"
+    assets_dir: str = "assets"
+    socket_name: str = "socket_0"
+
     pelvis_pos: list = field(default_factory=lambda: [0, 0, 0.7])
     frame_size: float = 0.03
     
@@ -143,7 +146,7 @@ class LigamentousHipBuilder:
     def _add_convex_socket(self, parent_body):
         """Load an external MJCF socket and attach it to the parent body"""
         # 1. Load the external spec
-        socket_file = "../assets/socket_0/socket_0.xml"
+        socket_file = f"../{self.config.assets_dir}/{self.config.socket_name}.xml"
         socket_spec = mujoco.MjSpec.from_file(socket_file)
         
         # 2. Get the root body from the external spec
@@ -235,6 +238,7 @@ def main():
     # --- Execution ---
     builder = LigamentousHipBuilder()
     spec = builder.build()
+    spec.compiler.meshdir = f"{builder.config.assets_dir}"  # Set the mesh directory for the compiler
     model = spec.compile()
 
     # Verification
