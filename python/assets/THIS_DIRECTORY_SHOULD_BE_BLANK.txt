@@ -1,1 +1,4 @@
-the python/generating~.py codes executes attach_body() method to merge external .xml file of Open_ball_joint_mjcf/assets/ directory. 
+The python/generating~.py codes executes attach_body() method to merge external .xml file of Open_ball_joint_mjcf/assets/ directory. 
+Keeping this directory blank is necessary to avoid unexpected loading of .xml, .obj, .mtl or some mesh files from here. 
+
+On the other hand, .py files are only for generating .xml files that are moved to Open_ball_joint_mjcf/ directory. 
