@@ -199,7 +199,7 @@ class LigamentousHipBuilder:
         link.add_geom(name="sphere", type=mujoco.mjtGeom.mjGEOM_SPHERE, size=[0.04], 
                       rgba=[0, .7, .7, 0.5], friction=[0.001, 0.001, 0.001])
         link.add_geom(name="cylinder", type=mujoco.mjtGeom.mjGEOM_CYLINDER, 
-                      fromto=[0, 0, 0, 0, 0, -0.3], size=[0.01], rgba=[0.7, 0.7, 0.7, 1])
+                      fromto=[0, 0, 0, 0, 0, -0.3], size=[0.015], rgba=[0.7, 0.7, 0.7, 1])
         link.add_geom(name="weight", type=mujoco.mjtGeom.mjGEOM_SPHERE, 
                       pos=[0, 0, -0.3], size=[0.08], mass=5, rgba=[.2, .2, .2, 1])
         return link
