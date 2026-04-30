@@ -285,11 +285,25 @@ class LigamentousHipBuilder:
         for i in range(num_origins):
             j = i//2
             k = int(i/2*3)
-            spatial = self.spec.add_tendon(name=f"tendon_{i}_{j}", width=0.002, rgba=[1, 0, 0, 0.5])
+            tendon_name = f"tendon_{i}_{j}"
+            spatial = self.spec.add_tendon(name=tendon_name, width=0.002, rgba=[1, 0, 0, 0.5])
             spatial.wrap_site(f"tendon_origin_{i}")
             # Reusing the relay site name (or object)
             spatial.wrap_geom("sphere", f"relay_{k}") 
             spatial.wrap_site(f"tendon_insertion_{j}")
+
+            # Adding motor actuation to the tendon
+            actuator_name = f"motor_{tendon_name}"
+            motor = self.spec.add_actuator(name=actuator_name)
+            motor.set_to_motor()
+            motor.trntype = mujoco.mjtTrn.mjTRN_TENDON
+            motor.target = tendon_name
+            
+            motor.gear = [1, 0, 0, 0, 0, 0] # motor gear="1"
+            motor.ctrllimited = True
+            motor.ctrlrange = [-2000, 0]
+
+
 
 def main():
     # --- Execution ---
