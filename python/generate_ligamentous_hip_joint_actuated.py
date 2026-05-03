@@ -195,7 +195,7 @@ class LigamentousHipBuilder:
         link.add_geom(name="ligament_insertion_geom", type=mujoco.mjtGeom.mjGEOM_CYLINDER, 
                       pos=[0, 0, -0.05], size=[0.025, 0.005], rgba=[.3, .3, .3, 1])
         link.add_geom(name="tendon_insertion_geom", type=mujoco.mjtGeom.mjGEOM_CYLINDER, 
-                      pos=[0, 0, -0.1], size=[r_ten_ins, 0.005], rgba=[.3, .3, .3, 1])
+                      pos=[0, 0, -0.06], size=[r_ten_ins, 0.005], rgba=[.3, .3, .3, 1])
         link.add_geom(name="sphere", type=mujoco.mjtGeom.mjGEOM_SPHERE, size=[0.04], 
                       rgba=[0, .7, .7, 0.5], friction=[0.001, 0.001, 0.001])
         link.add_geom(name="cylinder", type=mujoco.mjtGeom.mjGEOM_CYLINDER, 
