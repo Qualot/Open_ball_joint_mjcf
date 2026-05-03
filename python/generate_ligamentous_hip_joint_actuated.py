@@ -1,6 +1,7 @@
 import mujoco
 import numpy as np
 from dataclasses import dataclass, field
+import yaml
 
 @dataclass
 class HipConfig:
@@ -32,14 +33,19 @@ class HipConfig:
 
 
 class LigamentousHipBuilder:
-    def __init__(self):
+    def __init__(self, yaml_path=None):
         self.spec = mujoco.MjSpec()
         self.config = HipConfig()
         self.spec.modelname = self.config.model_name
         # Storage for reuse
         self.relay_sites = []
         self.relay_container = None
-        
+
+        self.ligament_data = {}
+        if yaml_path:
+            with open(yaml_path, 'r') as f:
+                self.ligament_data = yaml.safe_load(f)
+
     def build(self):
         """Main build pipeline"""
         self._set_defaults()
@@ -246,7 +252,8 @@ class LigamentousHipBuilder:
         for i in range(num):
             for offset in [-1, 0, 1]:
                 j = (i + offset) % num
-                spatial = self.spec.add_tendon(name=f"lig_{i}_{j}")
+                tendon_name = f"lig_{i}_{j}"
+                spatial = self.spec.add_tendon(name=tendon_name)
                 spatial.wrap_site(f"lig_origin_{i}")
                 # Reusing the relay site name (or object)
                 spatial.wrap_geom("sphere", f"relay_{i}") 
@@ -254,7 +261,9 @@ class LigamentousHipBuilder:
                 
                 spatial.frictionloss = self.config.ligament_friction
                 spatial.limited = True
-                spatial.range = self.config.ligament_range
+
+                ref_length = self.ligament_data.get(tendon_name, self.config.ligament_range[1])                
+                spatial.range = [0, ref_length * 1.05]  # Allow some stretch beyond rest length
 
     def _add_motor_tendons(self, origin_body, link_body):
         """Create sites and tendons using pre-generated relay sites"""
@@ -308,7 +317,7 @@ class LigamentousHipBuilder:
 
 def main():
     # --- Execution ---
-    builder = LigamentousHipBuilder()
+    builder = LigamentousHipBuilder(yaml_path="../config/ligaments_max_pitch.yaml")
     spec = builder.build()
     spec.compiler.meshdir = f"{builder.config.assets_dir}"  # Set the mesh directory for the compiler
     model = spec.compile()
