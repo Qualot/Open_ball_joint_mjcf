@@ -51,7 +51,7 @@ class LigamentousHipBuilder:
         socket_bottom = self._add_socket_bottom(pelvis_frame)
         self._add_socket_sensors(socket_bottom)
         self._add_socket_walls(socket_bottom)
-        self._add_convex_socket(socket_bottom, free_joint=True)
+        self._add_convex_socket(socket_bottom, free_joint=False)
 
         sites_origin_body = self._add_origin_container(socket_bottom)
         
