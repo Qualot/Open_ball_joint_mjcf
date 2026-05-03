@@ -22,13 +22,13 @@ class HipConfig:
     ligament_range: list = field(default_factory=lambda: [0, 0.2])
 
     #Tendon parameters
-    num_tendon_origins: int = 8
+    num_tendon_origins: int = 12
     num_tendon_insertions: int = 4
     r_tendon_ins: float = 0.025
-    tendon_origin_points = np.array([[0.05, 0.05, -0.11], [0.05, 0.115, -0.045], 
-                              [0.03, 0.13+frame_size, -frame_size], [-0.03, 0.13+frame_size, -frame_size], 
-                              [-0.05, 0.115, -0.045], [-0.05, 0.05, -0.11], 
-                              [-0.03, frame_size, -0.13-frame_size], [0.03, frame_size, -0.13-frame_size]])
+    tendon_origin_points = np.array([[0.05, 0.05, -0.11], [0.05  ,  0.0825, -0.0775], [0.05, 0.115, -0.045], 
+                              [0.03, 0.13+frame_size, -frame_size], [0, 0.13+frame_size, -frame_size], [-0.03, 0.13+frame_size, -frame_size], 
+                              [-0.05, 0.115, -0.045], [-0.05  ,  0.0825, -0.0775], [-0.05, 0.05, -0.11], 
+                              [-0.03, frame_size, -0.13-frame_size], [0, frame_size, -0.13-frame_size], [0.03, frame_size, -0.13-frame_size]])
 
 
 class LigamentousHipBuilder:
@@ -283,25 +283,26 @@ class LigamentousHipBuilder:
 
         # Tendon connection logic
         for i in range(num_origins):
-            j = i//2
-            k = int(i/2*3)
-            tendon_name = f"tendon_{i}_{j}"
-            spatial = self.spec.add_tendon(name=tendon_name, width=0.002, rgba=[1, 0, 0, 0.5])
-            spatial.wrap_site(f"tendon_origin_{i}")
-            # Reusing the relay site name (or object)
-            spatial.wrap_geom("sphere", f"relay_{k}") 
-            spatial.wrap_site(f"tendon_insertion_{j}")
+            for offset in [0]:
+                j = (i//3 + offset) % num_insertions  # Connect each origin to 3 insertions, using integer division for grouping
+                k = int(i/3*3)
+                tendon_name = f"tendon_{i}_{j}"
+                spatial = self.spec.add_tendon(name=tendon_name, width=0.002, rgba=[1, 0, 0, 0.5])
+                spatial.wrap_site(f"tendon_origin_{i}")
+                # Reusing the relay site name (or object)
+                spatial.wrap_geom("sphere", f"relay_{k}") 
+                spatial.wrap_site(f"tendon_insertion_{j}")
 
-            # Adding motor actuation to the tendon
-            actuator_name = f"motor_{tendon_name}"
-            motor = self.spec.add_actuator(name=actuator_name)
-            motor.set_to_motor()
-            motor.trntype = mujoco.mjtTrn.mjTRN_TENDON
-            motor.target = tendon_name
-            
-            motor.gear = [1, 0, 0, 0, 0, 0] # motor gear="1"
-            motor.ctrllimited = True
-            motor.ctrlrange = [-2000, 0]
+                # Adding motor actuation to the tendon
+                actuator_name = f"motor_{tendon_name}"
+                motor = self.spec.add_actuator(name=actuator_name)
+                motor.set_to_motor()
+                motor.trntype = mujoco.mjtTrn.mjTRN_TENDON
+                motor.target = tendon_name
+                
+                motor.gear = [1, 0, 0, 0, 0, 0] # motor gear="1"
+                motor.ctrllimited = True
+                motor.ctrlrange = [-2000, 0]
 
 
 
