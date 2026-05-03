@@ -258,7 +258,7 @@ class LigamentousHipBuilder:
 
     def _add_motor_tendons(self, origin_body, link_body):
         """Create sites and tendons using pre-generated relay sites"""
-        ins_container = link_body.add_body(name="sites_tendon_insertion", pos=[0, 0, -0.1])
+        ins_container = link_body.add_body(name="sites_tendon_insertion", pos=[0, 0, -0.06])
         num_origins = self.config.num_tendon_origins
         num_insertions = self.config.num_tendon_insertions
         
