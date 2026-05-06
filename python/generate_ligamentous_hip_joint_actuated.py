@@ -211,18 +211,27 @@ class LigamentousHipBuilder:
         link = self.spec.worldbody.add_body(name="link", pos=pos)
         link.add_joint(name="ball_joint", type=mujoco.mjtJoint.mjJNT_FREE, damping=0.05)
         
+
+        # Link to replicate femoral inclination
+        link_inclined = link.add_body(name="link_inclined", pos=[0, 0, 0], euler=[45, 0, 0])
+
         # Link geoms
-        link.add_geom(name="ligament_insertion_geom", type=mujoco.mjtGeom.mjGEOM_CYLINDER, 
+        link_inclined.add_geom(name="ligament_insertion_geom", type=mujoco.mjtGeom.mjGEOM_CYLINDER, 
                       pos=[0, 0, -0.05], size=[0.025, 0.005], rgba=[.3, .3, .3, 1])
-        link.add_geom(name="tendon_insertion_geom", type=mujoco.mjtGeom.mjGEOM_CYLINDER, 
+        link_inclined.add_geom(name="tendon_insertion_geom", type=mujoco.mjtGeom.mjGEOM_CYLINDER, 
                       pos=[0, 0, -0.06], size=[r_ten_ins, 0.005], rgba=[.3, .3, .3, 1])
-        link.add_geom(name="sphere", type=mujoco.mjtGeom.mjGEOM_SPHERE, size=[self.config.ball_diameter/2], 
+        link_inclined.add_geom(name="sphere", type=mujoco.mjtGeom.mjGEOM_SPHERE, size=[self.config.ball_diameter/2], 
                       rgba=[0, .7, .7, 0.5], friction=[0.001, 0.001, 0.001])
-        link.add_geom(name="cylinder", type=mujoco.mjtGeom.mjGEOM_CYLINDER, 
+        link_inclined.add_geom(name="short_cylinder", type=mujoco.mjtGeom.mjGEOM_CYLINDER, 
+                      fromto=[0, 0, 0, 0, 0, -self.config.ball_diameter], size=[0.015], rgba=[0.7, 0.7, 0.7, 1])
+
+        link_stick = link_inclined.add_body(name="link_stick", pos=[0, 0, -self.config.ball_diameter], euler=[-50, 0, 0])
+        link_stick.add_geom(name="long_cylinder", type=mujoco.mjtGeom.mjGEOM_CYLINDER, 
                       fromto=[0, 0, 0, 0, 0, -0.3], size=[0.015], rgba=[0.7, 0.7, 0.7, 1])
-        link.add_geom(name="weight", type=mujoco.mjtGeom.mjGEOM_SPHERE, 
+        link_stick.add_geom(name="weight", type=mujoco.mjtGeom.mjGEOM_SPHERE, 
                       pos=[0, 0, -0.3], size=[0.08], mass=5, rgba=[.2, .2, .2, 1])
-        return link
+
+        return link_inclined
 
     def _add_relay_sites(self, parent_body):
         """Creates relay sites and stores them for multiple uses (ligaments/motors)"""
