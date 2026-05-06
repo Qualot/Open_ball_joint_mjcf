@@ -17,6 +17,7 @@ class HipConfig:
     # Socket parameters
     socket_bottom_pos: np.ndarray = field(default_factory=lambda: np.array([0, 0.08, -0.08]))
     socket_bottom_thickness: float = 0.01
+    socket_sensor_thickness: float = 0.01
     socket_thickness_min: float = 0.003
 
     # Femoral head ball parameters
@@ -150,11 +151,13 @@ class LigamentousHipBuilder:
         """Add sensors to the socket for joint interaction force"""
         sensors = []
         r = 0.07 /np.sqrt(2)  # Place sensors at the corners of a square around the center
+        bottom_thickness = self.config.socket_bottom_thickness
+        sensor_thickness = self.config.socket_sensor_thickness
         for i in range(4):
             theta = 2 * np.pi * i / 4 + np.pi / 4  # Offset by 45 degrees for better coverage
-            sensors.append(parent.add_body(name=f"socket_bottom_{i}", pos=[r * np.cos(theta), r * np.sin(theta), 0.015], euler=[0, 0, 0]))
-            sensors[-1].add_geom(type=mujoco.mjtGeom.mjGEOM_CYLINDER, size=[0.01, 0.005], rgba=[1, 1, 1, 1])
-            sensors[-1].add_site(name=f"force_sensor_{i}", pos=[0, 0, 0.02], size=[0.01], rgba=[1, 0, 0, 0])
+            sensors.append(parent.add_body(name=f"socket_bottom_{i}", pos=[r * np.cos(theta), r * np.sin(theta), bottom_thickness + sensor_thickness/2], euler=[0, 0, 0]))
+            sensors[-1].add_geom(type=mujoco.mjtGeom.mjGEOM_CYLINDER, size=[0.01, sensor_thickness/2], rgba=[1, 1, 1, 1])
+            sensors[-1].add_site(name=f"force_sensor_{i}", pos=[0, 0, bottom_thickness + sensor_thickness], size=[0.01], rgba=[1, 0, 0, 0])
         return sensors
 
     def _add_origin_container(self, parent):
