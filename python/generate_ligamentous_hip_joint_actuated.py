@@ -286,8 +286,10 @@ class LigamentousHipBuilder:
                 spatial.limited = True
 
                 ref_length = self.ligament_data.get(tendon_name, self.config.ligament_range[1])                
-                spatial.range = [0, ref_length * 1.05]  # Allow some stretch beyond rest length
-    
+                # spatial.range = [0, ref_length * 1.05]  # Allow some stretch beyond rest length
+                spatial.range = self.config.ligament_range
+                
+
     def _set_tendon_origin_points(self):
         frame_size = self.config.frame_size
         self.config.tendon_origin_points = np.array([[0.05, 0.05, -0.11], [0.05  ,  0.0825, -0.0775], [0.05, 0.115, -0.045], 
