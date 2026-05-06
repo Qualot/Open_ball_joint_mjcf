@@ -26,9 +26,9 @@ class HipConfig:
     num_tendon_origins: int = 12
     num_tendon_insertions: int = 4
     r_tendon_ins: float = 0.025
-    tendon_origin_points = np.array([[0.05, 0.05, -0.11], [0.05  ,  0.0825, -0.0775], [0.05, 0.115, -0.045], 
-                              [0.03, 0.13+frame_size, -frame_size], [0, 0.13+frame_size, -frame_size], [-0.03, 0.13+frame_size, -frame_size], 
-                              [-0.05, 0.115, -0.045], [-0.05  ,  0.0825, -0.0775], [-0.05, 0.05, -0.11], 
+    tendon_origin_points = np.array([[0.08, 0.05, -0.11], [0.08,  0.0825, -0.0775], [0.08, 0.115, -0.045], 
+                              [0.03, 0.13+frame_size, -frame_size+frame_size], [0, 0.13+frame_size, -frame_size+frame_size], [-0.03, 0.13+frame_size, -frame_size+frame_size], 
+                              [-0.08, 0.115, -0.045], [-0.08,  0.0825, -0.0775], [-0.08, 0.05, -0.11], 
                               [-0.03, frame_size, -0.13-frame_size], [0, frame_size, -0.13-frame_size], [0.03, frame_size, -0.13-frame_size]])
 
 
@@ -292,7 +292,12 @@ class LigamentousHipBuilder:
 
         # Tendon connection logic
         for i in range(num_origins):
-            for offset in [0]:
+            offset_set = [0]
+            if i % 3 == 0 and i > 0:  # Connect every 3 origins to the same insertions for grouping
+                offset_set = [-1, 0]
+            if i % 3 == 2:  # Connect every 3 origins to the same insertions for grouping
+                offset_set = [0, 1]
+            for offset in offset_set:
                 j = (i//3 + offset) % num_insertions  # Connect each origin to 3 insertions, using integer division for grouping
                 k = int(i/3*3)
                 tendon_name = f"tendon_{i}_{j}"
