@@ -14,6 +14,9 @@ class HipConfig:
     base_link_pos: list = field(default_factory=lambda: [0, 0, 0.7])
     frame_size: float = 0.03
 
+    # Socket parameters
+    socket_bottom_thickness: float = 0.01
+
     # Femoral head ball parameters
     ball_diameter: float = 0.06
     
@@ -114,7 +117,7 @@ class LigamentousHipBuilder:
     def _add_socket_bottom(self, parent):
         """Add the base plate"""
         bottom_plate = parent.add_body(name="socket_bottom", pos=[0, 0.08, -0.08], euler=[-135, 0, 0])
-        bottom_plate.add_geom(type=mujoco.mjtGeom.mjGEOM_BOX, pos=[0, 0, 0.005], size=[0.05, 0.05, 0.005], rgba=[.3, .3, .3, 1])
+        bottom_plate.add_geom(type=mujoco.mjtGeom.mjGEOM_BOX, pos=[0, 0, 0.005], size=[0.05, 0.05, self.config.socket_bottom_thickness/2], rgba=[.3, .3, .3, 1])
         return bottom_plate
 
     def _add_socket_walls(self, parent):
