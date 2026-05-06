@@ -9,7 +9,7 @@ class HipConfig:
     model_name: str = "hip_ligamentous_joint_actuated"
     assets_dir: str = "assets"
     pelvis_name: str = "pelvis_0"
-    socket_name: str = "socket_small_0"
+    socket_name: str = "socket_dia60_cov180"
 
     base_link_pos: np.ndarray = field(default_factory=lambda: np.array([0, 0, 0.7]))
     frame_size: float = 0.03
