@@ -1,0 +1,115 @@
+<mujoco model="socket_dia60_cov180">
+  <default>
+    <default class="visual">
+      <geom group="2" type="mesh" contype="0" conaffinity="0"/>
+    </default>
+    <default class="collision">
+      <geom group="3" type="mesh"/>
+    </default>
+  </default>
+  <asset>
+    <material name="white_high_gloss_plastic" specular="1.0" shininess="0.005212761999999999" rgba="1.000000 1.000000 1.000000 1.000000"/>
+    <mesh file="socket_dia60_cov180/socket_dia60_cov180.obj"/>
+    <mesh file="socket_dia60_cov180/socket_dia60_cov180_collision_0.obj"/>
+    <mesh file="socket_dia60_cov180/socket_dia60_cov180_collision_1.obj"/>
+    <mesh file="socket_dia60_cov180/socket_dia60_cov180_collision_2.obj"/>
+    <mesh file="socket_dia60_cov180/socket_dia60_cov180_collision_3.obj"/>
+    <mesh file="socket_dia60_cov180/socket_dia60_cov180_collision_4.obj"/>
+    <mesh file="socket_dia60_cov180/socket_dia60_cov180_collision_5.obj"/>
+    <mesh file="socket_dia60_cov180/socket_dia60_cov180_collision_6.obj"/>
+    <mesh file="socket_dia60_cov180/socket_dia60_cov180_collision_7.obj"/>
+    <mesh file="socket_dia60_cov180/socket_dia60_cov180_collision_8.obj"/>
+    <mesh file="socket_dia60_cov180/socket_dia60_cov180_collision_9.obj"/>
+    <mesh file="socket_dia60_cov180/socket_dia60_cov180_collision_10.obj"/>
+    <mesh file="socket_dia60_cov180/socket_dia60_cov180_collision_11.obj"/>
+    <mesh file="socket_dia60_cov180/socket_dia60_cov180_collision_12.obj"/>
+    <mesh file="socket_dia60_cov180/socket_dia60_cov180_collision_13.obj"/>
+    <mesh file="socket_dia60_cov180/socket_dia60_cov180_collision_14.obj"/>
+    <mesh file="socket_dia60_cov180/socket_dia60_cov180_collision_15.obj"/>
+    <mesh file="socket_dia60_cov180/socket_dia60_cov180_collision_16.obj"/>
+    <mesh file="socket_dia60_cov180/socket_dia60_cov180_collision_17.obj"/>
+    <mesh file="socket_dia60_cov180/socket_dia60_cov180_collision_18.obj"/>
+    <mesh file="socket_dia60_cov180/socket_dia60_cov180_collision_19.obj"/>
+    <mesh file="socket_dia60_cov180/socket_dia60_cov180_collision_20.obj"/>
+    <mesh file="socket_dia60_cov180/socket_dia60_cov180_collision_21.obj"/>
+    <mesh file="socket_dia60_cov180/socket_dia60_cov180_collision_22.obj"/>
+    <mesh file="socket_dia60_cov180/socket_dia60_cov180_collision_23.obj"/>
+    <mesh file="socket_dia60_cov180/socket_dia60_cov180_collision_24.obj"/>
+    <mesh file="socket_dia60_cov180/socket_dia60_cov180_collision_25.obj"/>
+    <mesh file="socket_dia60_cov180/socket_dia60_cov180_collision_26.obj"/>
+    <mesh file="socket_dia60_cov180/socket_dia60_cov180_collision_27.obj"/>
+    <mesh file="socket_dia60_cov180/socket_dia60_cov180_collision_28.obj"/>
+    <mesh file="socket_dia60_cov180/socket_dia60_cov180_collision_29.obj"/>
+    <mesh file="socket_dia60_cov180/socket_dia60_cov180_collision_30.obj"/>
+    <mesh file="socket_dia60_cov180/socket_dia60_cov180_collision_31.obj"/>
+    <mesh file="socket_dia60_cov180/socket_dia60_cov180_collision_32.obj"/>
+    <mesh file="socket_dia60_cov180/socket_dia60_cov180_collision_33.obj"/>
+    <mesh file="socket_dia60_cov180/socket_dia60_cov180_collision_34.obj"/>
+    <mesh file="socket_dia60_cov180/socket_dia60_cov180_collision_35.obj"/>
+    <mesh file="socket_dia60_cov180/socket_dia60_cov180_collision_36.obj"/>
+    <mesh file="socket_dia60_cov180/socket_dia60_cov180_collision_37.obj"/>
+    <mesh file="socket_dia60_cov180/socket_dia60_cov180_collision_38.obj"/>
+    <mesh file="socket_dia60_cov180/socket_dia60_cov180_collision_39.obj"/>
+    <mesh file="socket_dia60_cov180/socket_dia60_cov180_collision_40.obj"/>
+    <mesh file="socket_dia60_cov180/socket_dia60_cov180_collision_41.obj"/>
+    <mesh file="socket_dia60_cov180/socket_dia60_cov180_collision_42.obj"/>
+    <mesh file="socket_dia60_cov180/socket_dia60_cov180_collision_43.obj"/>
+    <mesh file="socket_dia60_cov180/socket_dia60_cov180_collision_44.obj"/>
+    <mesh file="socket_dia60_cov180/socket_dia60_cov180_collision_45.obj"/>
+    <mesh file="socket_dia60_cov180/socket_dia60_cov180_collision_46.obj"/>
+    <mesh file="socket_dia60_cov180/socket_dia60_cov180_collision_47.obj"/>
+  </asset>
+  <worldbody>
+    <body name="socket_dia60_cov180">
+      <geom material="white_high_gloss_plastic" mesh="socket_dia60_cov180" class="visual"/>
+      <geom mesh="socket_dia60_cov180_collision_0" rgba="0.6124103355949837 0.3402714298441608 0.0014173592319159933 1" class="collision"/>
+      <geom mesh="socket_dia60_cov180_collision_1" rgba="0.21345904617325218 0.6578694183480074 0.24370449464160648 1" class="collision"/>
+      <geom mesh="socket_dia60_cov180_collision_2" rgba="0.4473364856209555 0.26131155111008497 0.2604742935201959 1" class="collision"/>
+      <geom mesh="socket_dia60_cov180_collision_3" rgba="0.06489659469481879 0.6501718943636248 0.24843494210078698 1" class="collision"/>
+      <geom mesh="socket_dia60_cov180_collision_4" rgba="0.22540525903708475 0.6159026223535109 0.08632981598316691 1" class="collision"/>
+      <geom mesh="socket_dia60_cov180_collision_5" rgba="0.007230833976899387 0.46877700833783953 0.8946388651618528 1" class="collision"/>
+      <geom mesh="socket_dia60_cov180_collision_6" rgba="0.06570772573869987 0.7469198775709652 0.30595433653126514 1" class="collision"/>
+      <geom mesh="socket_dia60_cov180_collision_7" rgba="0.03536868265064841 0.03850051924691544 0.6465546431301552 1" class="collision"/>
+      <geom mesh="socket_dia60_cov180_collision_8" rgba="0.6669631015853126 0.5448951004363054 0.041865171158241954 1" class="collision"/>
+      <geom mesh="socket_dia60_cov180_collision_9" rgba="0.17484397105566418 0.4954829583387327 0.9592892068558262 1" class="collision"/>
+      <geom mesh="socket_dia60_cov180_collision_10" rgba="0.9813386123368733 0.8911665019633438 0.8488147042143698 1" class="collision"/>
+      <geom mesh="socket_dia60_cov180_collision_11" rgba="0.4464250797146069 0.1165053216347034 0.32367307038855697 1" class="collision"/>
+      <geom mesh="socket_dia60_cov180_collision_12" rgba="0.595601254798551 0.4210247997671843 0.3055984120162375 1" class="collision"/>
+      <geom mesh="socket_dia60_cov180_collision_13" rgba="0.4222779443080704 0.4813071407668875 0.44218200762387694 1" class="collision"/>
+      <geom mesh="socket_dia60_cov180_collision_14" rgba="0.6463707028747347 0.99538541921553 0.15074243604634807 1" class="collision"/>
+      <geom mesh="socket_dia60_cov180_collision_15" rgba="0.6392946100183757 0.8480723719430008 0.6750868995921683 1" class="collision"/>
+      <geom mesh="socket_dia60_cov180_collision_16" rgba="0.9908576530737672 3.8102171261544804e-05 0.6422835186317524 1" class="collision"/>
+      <geom mesh="socket_dia60_cov180_collision_17" rgba="0.23993015998627176 0.3651243407337481 0.1960832481829453 1" class="collision"/>
+      <geom mesh="socket_dia60_cov180_collision_18" rgba="0.5923295547372769 0.9019645094536867 0.5146168505724242 1" class="collision"/>
+      <geom mesh="socket_dia60_cov180_collision_19" rgba="0.7205402344963597 0.30062514149098396 0.8078081887747669 1" class="collision"/>
+      <geom mesh="socket_dia60_cov180_collision_20" rgba="0.6954127038474883 0.006690869781179942 0.3044122451217611 1" class="collision"/>
+      <geom mesh="socket_dia60_cov180_collision_21" rgba="0.7461261313586713 0.35140514758051355 0.9705450407539702 1" class="collision"/>
+      <geom mesh="socket_dia60_cov180_collision_22" rgba="0.9902961541482759 0.06699792911304292 0.3293983258919838 1" class="collision"/>
+      <geom mesh="socket_dia60_cov180_collision_23" rgba="0.6975690759041407 0.07360263196134942 0.6689081483468694 1" class="collision"/>
+      <geom mesh="socket_dia60_cov180_collision_24" rgba="0.2562690603322968 0.8757310549128391 0.974066819717117 1" class="collision"/>
+      <geom mesh="socket_dia60_cov180_collision_25" rgba="0.12873879797544696 0.5482689684369231 0.06993536666087019 1" class="collision"/>
+      <geom mesh="socket_dia60_cov180_collision_26" rgba="0.3560116231309306 0.7491438983103595 0.7128711037312103 1" class="collision"/>
+      <geom mesh="socket_dia60_cov180_collision_27" rgba="0.10913444620887136 0.11825587855623143 0.14309567717358318 1" class="collision"/>
+      <geom mesh="socket_dia60_cov180_collision_28" rgba="0.4045747197137013 0.7262752849985226 0.20300511417944944 1" class="collision"/>
+      <geom mesh="socket_dia60_cov180_collision_29" rgba="0.6217879965315817 0.3325251220935408 0.8851838537319834 1" class="collision"/>
+      <geom mesh="socket_dia60_cov180_collision_30" rgba="0.13477413160754514 0.5113612649549807 0.99316014868043 1" class="collision"/>
+      <geom mesh="socket_dia60_cov180_collision_31" rgba="0.3655683524293193 0.16353306771328024 0.04600451601981792 1" class="collision"/>
+      <geom mesh="socket_dia60_cov180_collision_32" rgba="0.2058222784651058 0.04213860216869558 0.19895026758142353 1" class="collision"/>
+      <geom mesh="socket_dia60_cov180_collision_33" rgba="0.9774652968034605 0.7704691762964222 0.27323636689219544 1" class="collision"/>
+      <geom mesh="socket_dia60_cov180_collision_34" rgba="0.2421921993060404 0.8479018626307107 0.8712168204390411 1" class="collision"/>
+      <geom mesh="socket_dia60_cov180_collision_35" rgba="0.27530704265185957 0.20323097933939882 0.8500435055072911 1" class="collision"/>
+      <geom mesh="socket_dia60_cov180_collision_36" rgba="0.8317559735333113 0.4866379894920876 0.6139161754973226 1" class="collision"/>
+      <geom mesh="socket_dia60_cov180_collision_37" rgba="0.060389290045753885 0.49103244143647684 0.5063043522125512 1" class="collision"/>
+      <geom mesh="socket_dia60_cov180_collision_38" rgba="0.8656563278653698 0.52270250047143 0.6113155573192535 1" class="collision"/>
+      <geom mesh="socket_dia60_cov180_collision_39" rgba="0.9251245597717428 0.2040630214370316 0.7906077946568634 1" class="collision"/>
+      <geom mesh="socket_dia60_cov180_collision_40" rgba="0.3826037733202561 0.23296368260112765 0.2345187982704796 1" class="collision"/>
+      <geom mesh="socket_dia60_cov180_collision_41" rgba="0.12373919495112384 0.6022592576435815 0.2889340341831972 1" class="collision"/>
+      <geom mesh="socket_dia60_cov180_collision_42" rgba="0.251273544398133 0.1736590854823774 0.9890165990250178 1" class="collision"/>
+      <geom mesh="socket_dia60_cov180_collision_43" rgba="0.5622420052184214 0.8867245796454915 0.5502800741570983 1" class="collision"/>
+      <geom mesh="socket_dia60_cov180_collision_44" rgba="0.846689462046305 0.7066830963155465 0.06036898282252112 1" class="collision"/>
+      <geom mesh="socket_dia60_cov180_collision_45" rgba="0.15579435934368935 0.36171368055082287 0.8285874066456507 1" class="collision"/>
+      <geom mesh="socket_dia60_cov180_collision_46" rgba="0.1538850643626124 0.6090960880992893 0.8250768791910245 1" class="collision"/>
+      <geom mesh="socket_dia60_cov180_collision_47" rgba="0.934972277352591 0.4561664587987456 0.15994145323570663 1" class="collision"/>
+    </body>
+  </worldbody>
+</mujoco>
