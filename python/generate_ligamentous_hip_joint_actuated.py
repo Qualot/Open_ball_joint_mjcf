@@ -15,7 +15,9 @@ class HipConfig:
     frame_size: float = 0.03
 
     # Socket parameters
+    socket_bottom_pos: list = field(default_factory=lambda: [0, 0.08, -0.08])
     socket_bottom_thickness: float = 0.01
+    socket_thickness_min: float = 0.003
 
     # Femoral head ball parameters
     ball_diameter: float = 0.06
@@ -116,7 +118,7 @@ class LigamentousHipBuilder:
 
     def _add_socket_bottom(self, parent):
         """Add the base plate"""
-        bottom_plate = parent.add_body(name="socket_bottom", pos=[0, 0.08, -0.08], euler=[-135, 0, 0])
+        bottom_plate = parent.add_body(name="socket_bottom", pos=self.config.socket_bottom_pos, euler=[-135, 0, 0])
         bottom_plate.add_geom(type=mujoco.mjtGeom.mjGEOM_BOX, pos=[0, 0, 0.005], size=[0.05, 0.05, self.config.socket_bottom_thickness/2], rgba=[.3, .3, .3, 1])
         return bottom_plate
 
@@ -198,6 +200,12 @@ class LigamentousHipBuilder:
 
         # Calculate position relative to world
         #pos = [0, self.config.base_link_pos[1] + 0.07 + 0.045, self.config.base_link_pos[2] - 0.05 - 0.045]
+        theta = -np.pi*3/4
+        rotation_matrix_x = np.array([[1, 0, 0],
+                                      [0, np.cos(theta), -np.sin(theta)],
+                                      [0, np.sin(theta), np.cos(theta)]])
+        pos_from_socket_to_ball = np.array([0, 0, self.config.socket_thickness_min+self.config.ball_diameter/2]) #self.config.socket_bottom_pos
+        # pos = np.array(self.config.base_link_pos) + np.array(self.config.socket_bottom_pos) + rotation_matrix_x @ pos_from_socket_to_ball
         pos = [0, self.config.base_link_pos[1] + 0.12455, self.config.base_link_pos[2] - 0.12455]
         
         link = self.spec.worldbody.add_body(name="link", pos=pos)
