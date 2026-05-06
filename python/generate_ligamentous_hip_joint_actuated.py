@@ -13,6 +13,9 @@ class HipConfig:
 
     base_link_pos: list = field(default_factory=lambda: [0, 0, 0.7])
     frame_size: float = 0.03
+
+    # Femoral head ball parameters
+    ball_diameter: float = 0.06
     
     # Ligament parameters
     num_sites: int = 12
@@ -202,7 +205,7 @@ class LigamentousHipBuilder:
                       pos=[0, 0, -0.05], size=[0.025, 0.005], rgba=[.3, .3, .3, 1])
         link.add_geom(name="tendon_insertion_geom", type=mujoco.mjtGeom.mjGEOM_CYLINDER, 
                       pos=[0, 0, -0.06], size=[r_ten_ins, 0.005], rgba=[.3, .3, .3, 1])
-        link.add_geom(name="sphere", type=mujoco.mjtGeom.mjGEOM_SPHERE, size=[0.04], 
+        link.add_geom(name="sphere", type=mujoco.mjtGeom.mjGEOM_SPHERE, size=[self.config.ball_diameter/2], 
                       rgba=[0, .7, .7, 0.5], friction=[0.001, 0.001, 0.001])
         link.add_geom(name="cylinder", type=mujoco.mjtGeom.mjGEOM_CYLINDER, 
                       fromto=[0, 0, 0, 0, 0, -0.3], size=[0.015], rgba=[0.7, 0.7, 0.7, 1])
