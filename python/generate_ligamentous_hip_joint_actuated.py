@@ -204,9 +204,9 @@ class LigamentousHipBuilder:
         rotation_matrix_x = np.array([[1, 0, 0],
                                       [0, np.cos(theta), -np.sin(theta)],
                                       [0, np.sin(theta), np.cos(theta)]])
+        pos_from_bottom_to_socket = np.array([0, 0, self.config.socket_bottom_thickness + self.config.socket_sensor_thickness])
         pos_from_socket_to_ball = np.array([0, 0, self.config.socket_thickness_min+self.config.ball_diameter/2]) #self.config.socket_bottom_pos
-        # pos = np.array(self.config.base_link_pos) + np.array(self.config.socket_bottom_pos) + rotation_matrix_x @ pos_from_socket_to_ball
-        pos = [0, self.config.base_link_pos[1] + 0.12455, self.config.base_link_pos[2] - 0.12455]
+        pos = self.config.base_link_pos + self.config.socket_bottom_pos + rotation_matrix_x @ (pos_from_bottom_to_socket + pos_from_socket_to_ball)
         
         link = self.spec.worldbody.add_body(name="link", pos=pos)
         link.add_joint(name="ball_joint", type=mujoco.mjtJoint.mjJNT_FREE, damping=0.05)
