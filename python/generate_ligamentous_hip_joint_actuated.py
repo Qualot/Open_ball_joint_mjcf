@@ -11,11 +11,11 @@ class HipConfig:
     pelvis_name: str = "pelvis_0"
     socket_name: str = "socket_small_0"
 
-    base_link_pos: list = field(default_factory=lambda: [0, 0, 0.7])
+    base_link_pos: np.ndarray = field(default_factory=lambda: np.array([0, 0, 0.7]))
     frame_size: float = 0.03
 
     # Socket parameters
-    socket_bottom_pos: list = field(default_factory=lambda: [0, 0.08, -0.08])
+    socket_bottom_pos: np.ndarray = field(default_factory=lambda: np.array([0, 0.08, -0.08]))
     socket_bottom_thickness: float = 0.01
     socket_thickness_min: float = 0.003
 
@@ -28,17 +28,13 @@ class HipConfig:
     r_lig_ins: float = 0.025
     r_relay: float = 0.05
     ligament_friction: float = 0.05
-    ligament_range: list = field(default_factory=lambda: [0, 0.2])
+    ligament_range: np.ndarray = field(default_factory=lambda: np.array([0, 0.2]))
 
     #Tendon parameters
     num_tendon_origins: int = 12
     num_tendon_insertions: int = 4
     r_tendon_ins: float = 0.025
-    tendon_origin_points = np.array([[0.05, 0.05, -0.11], [0.05  ,  0.0825, -0.0775], [0.05, 0.115, -0.045], 
-                              [0.03, 0.13+frame_size, -frame_size], [0, 0.13+frame_size, -frame_size], [-0.03, 0.13+frame_size, -frame_size], 
-                              [-0.05, 0.115, -0.045], [-0.05  ,  0.0825, -0.0775], [-0.05, 0.05, -0.11], 
-                              [-0.03, frame_size, -0.13-frame_size], [0, frame_size, -0.13-frame_size], [0.03, frame_size, -0.13-frame_size]])
-
+    tendon_origin_points: np.ndarray = field(default_factory=lambda: np.array([]))
 
 class LigamentousHipBuilder:
     def __init__(self, yaml_path=None):
@@ -79,6 +75,7 @@ class LigamentousHipBuilder:
         self._generate_ligaments(sites_origin_body, link)
         
         # 3. (Optional) Use them for motor tendons later
+        self._set_tendon_origin_points()
         self._add_motor_tendons(pelvis_frame, link)
         return self.spec
 
@@ -278,6 +275,14 @@ class LigamentousHipBuilder:
 
                 ref_length = self.ligament_data.get(tendon_name, self.config.ligament_range[1])                
                 spatial.range = [0, ref_length * 1.05]  # Allow some stretch beyond rest length
+    
+    def _set_tendon_origin_points(self):
+        frame_size = self.config.frame_size
+        self.config.tendon_origin_points = np.array([[0.05, 0.05, -0.11], [0.05  ,  0.0825, -0.0775], [0.05, 0.115, -0.045], 
+                              [0.03, 0.13+frame_size, -frame_size], [0, 0.13+frame_size, -frame_size], [-0.03, 0.13+frame_size, -frame_size], 
+                              [-0.05, 0.115, -0.045], [-0.05  ,  0.0825, -0.0775], [-0.05, 0.05, -0.11], 
+                              [-0.03, frame_size, -0.13-frame_size], [0, frame_size, -0.13-frame_size], [0.03, frame_size, -0.13-frame_size]])
+    
 
     def _add_motor_tendons(self, origin_body, link_body):
         """Create sites and tendons using pre-generated relay sites"""
