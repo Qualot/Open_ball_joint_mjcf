@@ -32,8 +32,8 @@ class HipConfig:
     ligament_range: np.ndarray = field(default_factory=lambda: np.array([0, 0.2]))
 
     #Tendon parameters
-    num_tendon_origins: int = 12
-    num_tendon_insertions: int = 4
+    num_tendon_origins: int = 15
+    num_tendon_insertions: int = 5
     r_tendon_ins: float = 0.025
     tendon_origin_points: np.ndarray = field(default_factory=lambda: np.array([]))
 
@@ -291,18 +291,20 @@ class LigamentousHipBuilder:
                 
 
     def _set_tendon_origin_points(self):
-        frame_size = self.config.frame_size
-        self.config.tendon_origin_points = np.array([[0.05, 0.05, -0.11], [0.05  ,  0.0825, -0.0775], [0.05, 0.115, -0.045], 
-                              [0.03, 0.13+frame_size, -frame_size], [0, 0.13+frame_size, -frame_size], [-0.03, 0.13+frame_size, -frame_size], 
-                              [-0.05, 0.115, -0.045], [-0.05  ,  0.0825, -0.0775], [-0.05, 0.05, -0.11], 
-                              [-0.03, frame_size, -0.13-frame_size], [0, frame_size, -0.13-frame_size], [0.03, frame_size, -0.13-frame_size]])
+        fs = self.config.frame_size
+        r_off = 0.03
+        self.config.tendon_origin_points = np.array([[0.05+fs/2, 0.05, -0.11], [0.05+fs/2, 0.0825, -0.0775], [0.05+fs/2, 0.115, -0.045], 
+                              [0.03, 0.13+fs, -fs], [0, 0.13+fs, -fs], [-0.03, 0.13+fs, -fs], 
+                              [-0.05-fs/2, 0.115+r_off, -0.045-r_off], [-0.05-fs/2, 0.0825+r_off, -0.0775-r_off], [-0.05-fs/2, 0.05+r_off, -0.11-r_off], 
+                              [-0.03, fs, -0.13-fs], [0, fs, -0.13-fs], [0.03, fs, -0.13-fs], 
+                              [0.05+fs, 0.05, fs], [0.05+fs, 0.0825, fs], [0.05+fs, 0.115, fs]])
     
 
     def _add_motor_tendons(self, origin_body, link_body):
         """Create sites and tendons using pre-generated relay sites"""
         ins_container = link_body.add_body(name="sites_tendon_insertion", pos=[0, 0, -0.06])
         num_origins = self.config.num_tendon_origins
-        num_insertions = self.config.num_tendon_insertions
+        num_insertions = self.config.num_tendon_insertions - 1
         
         for i in range(num_origins):
             angle = 2 * np.pi * i / num_origins
@@ -323,11 +325,20 @@ class LigamentousHipBuilder:
                                    pos=[self.config.r_tendon_ins * cos_a, self.config.r_tendon_ins * sin_a, 0],
                                    rgba=[1, 0, 0, 1] if i != 0 else [0, 0, 1, 1])
 
+        ins_container.add_site(name=f"tendon_insertion_{num_insertions}", 
+                                pos=[0.015, -0.045, -0.03],
+                                rgba=[1, 0, 0, 1])
+
         # Tendon connection logic
         for i in range(num_origins):
             for offset in [0]:
-                j = (i//3 + offset) % num_insertions  # Connect each origin to 3 insertions, using integer division for grouping
-                k = int(i/3*3)
+                if i < num_origins-3:
+                    j = (i//3 + offset) % num_insertions  # Connect each origin to 3 insertions, using integer division for grouping
+                    k = int(i/3*3)
+                else:
+                    j = num_insertions  # Connect remaining origins to the last insertion
+                    k = 0  # Use the first relay site for the last few tendons
+
                 tendon_name = f"tendon_{i}_{j}"
                 spatial = self.spec.add_tendon(name=tendon_name, width=0.002, rgba=[1, 0, 0, 0.5])
                 spatial.wrap_site(f"tendon_origin_{i}")
