@@ -39,7 +39,7 @@ class HipConfig:
 
 class LigamentousHipBuilder:
     def __init__(self, yaml_path=None):
-        self.spec = mujoco.MjSpec()
+        self.spec = mujoco.MjSpec.from_string(self._arena_xml())
         self.config = HipConfig()
         self.spec.modelname = self.config.model_name
         # Storage for reuse
@@ -54,7 +54,7 @@ class LigamentousHipBuilder:
     def build(self):
         """Main build pipeline"""
         self._set_defaults()
-        self._setup_world()
+        #self._setup_world()
         
         # Build hierarchy
         base_link = self.spec.worldbody.add_body(name="base_link", pos=self.config.base_link_pos)
@@ -87,10 +87,34 @@ class LigamentousHipBuilder:
         self.spec.default.tendon.width = 0.0005
         self.spec.default.tendon.rgba = [0.9, 0.9, 0.9, 0.25]
 
+    def _arena_xml(self):
+        """Generate the arena XML string (floor, walls, lighting) copied from https://colab.research.google.com/github/google-deepmind/mujoco/blob/main/python/mjspec.ipynb"""
+        return """
+        <mujoco>
+        <visual>
+            <headlight diffuse=".5 .5 .5" specular="1 1 1"/>
+            <global elevation="-10" offwidth="2048" offheight="1536"/>
+            <quality shadowsize="8192"/>
+        </visual>
+
+        <asset>
+            <texture type="skybox" builtin="gradient" rgb1=".5 .5 .5" rgb2="0 0 0" width="10" height="10"/>
+            <texture type="2d" name="groundplane" builtin="checker" mark="edge" rgb1="1 1 1" rgb2="1 1 1" markrgb="0 0 0" width="300" height="300"/>
+            <material name="groundplane" texture="groundplane" texuniform="true" texrepeat="5 5" reflectance="0.3"/>
+        </asset>
+
+        <worldbody>
+            <geom name="floor" size="5 5 0.01" type="plane" material="groundplane"/>
+            <light pos="0 0 3" diffuse="1 1 1" specular="1 1 1"/>
+        </worldbody>
+        </mujoco>
+        """
+
     def _setup_world(self):
         """Add lighting and floor"""
         world = self.spec.worldbody
-        world.add_light(diffuse=[.5, .5, .5], pos=[0, 0, 1], dir=[90, 0, -1])
+        world.add_light(diffuse=[0.5, 0.5, 0.5], ambient=[0.3, 0.3, 0.3], specular=[0, 0, 0], pos=[0, 0, 1.5], dir=[0, 0, -1])
+
         world.add_geom(type=mujoco.mjtGeom.mjGEOM_PLANE, size=[1, 1, 0.01], rgba=[.9, .9, .9, 1])
 
     def _add_pelvis_frame(self, parent):
