@@ -9,6 +9,8 @@ FLAGS = flags.FLAGS
 flags.DEFINE_string('yaml_path', '../config/ligaments_max_pitch.yaml', 'Path to the ligament config yaml')
 flags.DEFINE_bool('hide_ligament', False, 'Hide the ligaments')
 flags.DEFINE_bool('hide_tendon', False, 'Hide the tendons')
+flags.DEFINE_bool('hide_relay', False, 'Hide the relay sites')
+
 
 @dataclass
 class HipConfig:
@@ -45,11 +47,12 @@ class HipConfig:
     tendon_origin_points: np.ndarray = field(default_factory=lambda: np.array([]))
 
 class LigamentousHipBuilder:
-    def __init__(self, yaml_path=None, hide_ligament=False, hide_tendon=False):
+    def __init__(self, yaml_path=None, hide_ligament=False, hide_tendon=False, hide_relay=False):
         self.spec = mujoco.MjSpec.from_string(self._arena_xml())
         self.config = HipConfig()
         self.hide_ligament = hide_ligament
         self.hide_tendon = hide_tendon
+        self.hide_relay = hide_relay
         self.spec.modelname = self.config.model_name
         # Storage for reuse
         self.relay_sites = []
@@ -272,6 +275,8 @@ class LigamentousHipBuilder:
         # Create a container for organization
         self.relay_container = parent_body.add_body(name="sites_relay")
         num = self.config.num_sites
+
+        alpha_relay = 0.0 if self.hide_relay else 1.0
         
         for i in range(num):
             angle = 2 * np.pi * i / num
@@ -280,7 +285,7 @@ class LigamentousHipBuilder:
             s_relay = self.relay_container.add_site(
                 name=f"relay_{i}", 
                 pos=[self.config.r_relay * cos_a, self.config.r_relay * sin_a, 0],
-                rgba=[0, 1, 0, 1] if i != 0 else [0, 0, 1, 1]
+                rgba=[0, 1, 0, alpha_relay] if i != 0 else [0, 0, 1, alpha_relay]
             )
             self.relay_sites.append(s_relay)
 
@@ -404,7 +409,8 @@ def main(argv):
     builder = LigamentousHipBuilder(
         yaml_path=FLAGS.yaml_path, 
         hide_ligament=FLAGS.hide_ligament, 
-        hide_tendon=FLAGS.hide_tendon
+        hide_tendon=FLAGS.hide_tendon, 
+        hide_relay=FLAGS.hide_relay
         )
     spec = builder.build()
     spec.compiler.meshdir = f"{builder.config.assets_dir}"  # Set the mesh directory for the compiler
