@@ -317,7 +317,7 @@ class LigamentousHipBuilder:
             for offset in [-1, 0, 1]:
                 j = (i + offset) % num
                 tendon_name = f"lig_{i}_{j}"
-                spatial = self.spec.add_tendon(name=tendon_name, width=0.002, rgba=[1, 1, 1, lig_alpha])
+                spatial = self.spec.add_tendon(name=tendon_name, width=0.0005, rgba=[1, 1, 1, lig_alpha])
                 spatial.wrap_site(f"lig_origin_{i}")
                 # Reusing the relay site name (or object)
                 spatial.wrap_geom("sphere", f"relay_{i}") 
