@@ -331,13 +331,13 @@ class LigamentousHipBuilder:
             # Origin sites
             origin_body.add_site(name=f"lig_origin_{i}", 
                                 pos=[self.config.r_lig_origin * cos_a, self.config.r_lig_origin * sin_a, 0],
-                                rgba=[0.5, 0.5, 0.5, 1] if i != 0 else [0, 0, 1, 1]
+                                rgba=[0.5, 0.5, 0.5, lig_alpha] if i != 0 else [0, 0, 1, lig_alpha]
                                 )
             
             # Insertion sites
             ins_container.add_site(name=f"lig_insertion_{i}", 
                                    pos=[self.config.r_lig_ins * cos_a, self.config.r_lig_ins * sin_a, 0],
-                                   rgba=[0.5, 0.5, 0.5, 1] if i != 0 else [0, 0, 1, 1])
+                                   rgba=[0.5, 0.5, 0.5, lig_alpha] if i != 0 else [0, 0, 1, lig_alpha])
 
         # Tendon connection logic
         for i in range(num):
@@ -383,7 +383,7 @@ class LigamentousHipBuilder:
             # Origin sites
             origin_body.add_site(name=f"tendon_origin_{i}", 
                                 pos=self.config.tendon_origin_points[i],
-                                rgba=[1, 0, 0, 1] if i != 0 else [0, 0, 1, 1]
+                                rgba=[1, 0, 0, tendon_alpha] if i != 0 else [0, 0, 1, tendon_alpha]
                                 )
             
         for i in range(num_insertions):
@@ -393,11 +393,11 @@ class LigamentousHipBuilder:
             # Insertion sites
             ins_container.add_site(name=f"tendon_insertion_{i}", 
                                    pos=[self.config.r_tendon_ins * cos_a, self.config.r_tendon_ins * sin_a, 0],
-                                   rgba=[1, 0, 0, 1] if i != 0 else [0, 0, 1, 1])
+                                   rgba=[1, 0, 0, tendon_alpha] if i != 0 else [0, 0, 1, tendon_alpha])
 
         ins_container.add_site(name=f"tendon_insertion_{num_insertions}", 
                                 pos=[0.015, -0.045, -0.03],
-                                rgba=[1, 0, 0, 1])
+                                rgba=[1, 0, 0, tendon_alpha])
 
         # Tendon connection logic
         for i in range(num_origins):
