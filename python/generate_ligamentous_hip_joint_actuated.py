@@ -82,7 +82,7 @@ class LigamentousHipBuilder:
         pelvis_frame = self._add_pelvis_frame(base_link)
         socket_bottom = self._add_socket_bottom(pelvis_frame)
         self._add_socket_sensors(socket_bottom)
-        self._add_socket_walls(socket_bottom)
+        # self._add_socket_walls(socket_bottom)
         self._add_convex_socket(socket_bottom, free_joint=False)
 
         sites_origin_body = self._add_origin_container(socket_bottom)
@@ -102,7 +102,7 @@ class LigamentousHipBuilder:
 
         # 4. Set all geoms to have the same alpha if hide_geom is True        
         if self.hide_geom: 
-            self._set_all_geoms_alpha(0.25)
+            self._set_all_geoms_alpha(0.15)
 
         return self.spec
 
