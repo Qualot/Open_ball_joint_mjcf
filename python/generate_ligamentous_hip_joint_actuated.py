@@ -7,6 +7,7 @@ from absl import app, flags
 #flags
 FLAGS = flags.FLAGS
 flags.DEFINE_string('yaml_path', '../config/ligaments_max_pitch.yaml', 'Path to the ligament config yaml')
+flags.DEFINE_bool('hide_ligament', False, 'Hide the ligament')
 
 @dataclass
 class HipConfig:
@@ -43,9 +44,10 @@ class HipConfig:
     tendon_origin_points: np.ndarray = field(default_factory=lambda: np.array([]))
 
 class LigamentousHipBuilder:
-    def __init__(self, yaml_path=None):
+    def __init__(self, yaml_path=None, hide_ligament=False):
         self.spec = mujoco.MjSpec.from_string(self._arena_xml())
         self.config = HipConfig()
+        self.hide_ligament = hide_ligament
         self.spec.modelname = self.config.model_name
         # Storage for reuse
         self.relay_sites = []
@@ -55,6 +57,7 @@ class LigamentousHipBuilder:
         if yaml_path:
             with open(yaml_path, 'r') as f:
                 self.ligament_data = yaml.safe_load(f)
+
 
     def build(self):
         """Main build pipeline"""
@@ -285,6 +288,8 @@ class LigamentousHipBuilder:
         ins_container = link_body.add_body(name="sites_ligament_insertion", pos=[0, 0, -0.045])
         num = self.config.num_sites
         
+        lig_alpha = 0.0 if self.hide_ligament else 1.0
+
         for i in range(num):
             angle = 2 * np.pi * i / num
             cos_a, sin_a = np.cos(angle), np.sin(angle)
@@ -305,7 +310,7 @@ class LigamentousHipBuilder:
             for offset in [-1, 0, 1]:
                 j = (i + offset) % num
                 tendon_name = f"lig_{i}_{j}"
-                spatial = self.spec.add_tendon(name=tendon_name)
+                spatial = self.spec.add_tendon(name=tendon_name, width=0.002, rgba=[1, 1, 1, lig_alpha])
                 spatial.wrap_site(f"lig_origin_{i}")
                 # Reusing the relay site name (or object)
                 spatial.wrap_geom("sphere", f"relay_{i}") 
@@ -392,7 +397,10 @@ def main(argv):
     del argv  # Unused
 
     # --- Execution ---
-    builder = LigamentousHipBuilder(yaml_path=FLAGS.yaml_path)
+    builder = LigamentousHipBuilder(
+        yaml_path=FLAGS.yaml_path, 
+        hide_ligament=FLAGS.hide_ligament
+        )
     spec = builder.build()
     spec.compiler.meshdir = f"{builder.config.assets_dir}"  # Set the mesh directory for the compiler
     model = spec.compile()
