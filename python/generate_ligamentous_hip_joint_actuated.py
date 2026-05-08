@@ -2,6 +2,11 @@ import mujoco
 import numpy as np
 from dataclasses import dataclass, field
 import yaml
+from absl import app, flags
+
+#flags
+FLAGS = flags.FLAGS
+flags.DEFINE_string('yaml_path', '../config/ligaments_max_pitch.yaml', 'Path to the ligament config yaml')
 
 @dataclass
 class HipConfig:
@@ -383,9 +388,11 @@ class LigamentousHipBuilder:
 
 
 
-def main():
+def main(argv):
+    del argv  # Unused
+
     # --- Execution ---
-    builder = LigamentousHipBuilder(yaml_path="../config/ligaments_max_pitch.yaml")
+    builder = LigamentousHipBuilder(yaml_path=FLAGS.yaml_path)
     spec = builder.build()
     spec.compiler.meshdir = f"{builder.config.assets_dir}"  # Set the mesh directory for the compiler
     model = spec.compile()
@@ -395,4 +402,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    app.run(main)
