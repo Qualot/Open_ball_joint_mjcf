@@ -295,7 +295,7 @@ class LigamentousHipBuilder:
         ins_container = link_body.add_body(name="sites_ligament_insertion", pos=[0, 0, -0.045])
         num = self.config.num_sites
         
-        lig_alpha = 0.0 if self.hide_ligament else 1.0
+        lig_alpha = 0.0 if self.hide_ligament else 0.5
 
         for i in range(num):
             angle = 2 * np.pi * i / num
@@ -347,7 +347,7 @@ class LigamentousHipBuilder:
         num_origins = self.config.num_tendon_origins
         num_insertions = self.config.num_tendon_insertions - 1
         
-        tendon_alpha = 0.0 if self.hide_tendon else 1.0
+        tendon_alpha = 0.0 if self.hide_tendon else 0.5
 
         for i in range(num_origins):
             angle = 2 * np.pi * i / num_origins
