@@ -11,6 +11,8 @@ flags.DEFINE_bool('hide_ligament', False, 'Hide the ligaments')
 flags.DEFINE_bool('hide_tendon', False, 'Hide the tendons')
 flags.DEFINE_bool('hide_relay', False, 'Hide the relay sites')
 flags.DEFINE_bool('hide_geom', False, 'Hide the geoms')
+flags.DEFINE_bool('hide_background', False, 'Hide the background')
+
 
 
 @dataclass
@@ -48,8 +50,13 @@ class HipConfig:
     tendon_origin_points: np.ndarray = field(default_factory=lambda: np.array([]))
 
 class LigamentousHipBuilder:
-    def __init__(self, yaml_path=None, hide_ligament=False, hide_tendon=False, hide_relay=False, hide_geom=False):
-        self.spec = mujoco.MjSpec.from_string(self._arena_xml())
+    def __init__(self, yaml_path=None, 
+                 hide_ligament=False, 
+                 hide_tendon=False, 
+                 hide_relay=False, 
+                 hide_geom=False, 
+                 hide_background=False):
+        self.spec = mujoco.MjSpec.from_string(self._arena_xml(hide_background))
         self.config = HipConfig()
         self.hide_ligament = hide_ligament
         self.hide_tendon = hide_tendon
@@ -96,7 +103,7 @@ class LigamentousHipBuilder:
 
         # 4. Set all geoms to have the same alpha if hide_geom is True        
         if self.hide_geom: 
-            self._set_all_geoms_alpha(0.5)
+            self._set_all_geoms_alpha(0.25)
 
         return self.spec
 
@@ -107,28 +114,49 @@ class LigamentousHipBuilder:
         self.spec.default.tendon.width = 0.0005
         self.spec.default.tendon.rgba = [0.9, 0.9, 0.9, 0.25]
 
-    def _arena_xml(self):
+    def _arena_xml(self, hide_background=False):
         """Generate the arena XML string (floor, walls, lighting) copied from https://colab.research.google.com/github/google-deepmind/mujoco/blob/main/python/mjspec.ipynb"""
-        return """
-        <mujoco>
-        <visual>
-            <headlight diffuse=".5 .5 .5" specular="1 1 1"/>
-            <global elevation="-10" offwidth="2048" offheight="1536"/>
-            <quality shadowsize="8192"/>
-        </visual>
+        if hide_background:
+            return """
+            <mujoco>
+            <visual>
+                <headlight diffuse=".5 .5 .5" specular="1 1 1"/>
+                <global elevation="-10" offwidth="2048" offheight="1536"/>
+                <quality shadowsize="8192"/>
+            </visual>
 
-        <asset>
-            <texture type="skybox" builtin="gradient" rgb1=".5 .5 .5" rgb2="0 0 0" width="10" height="10"/>
-            <texture type="2d" name="groundplane" builtin="checker" mark="edge" rgb1="1 1 1" rgb2="1 1 1" markrgb="0 0 0" width="300" height="300"/>
-            <material name="groundplane" texture="groundplane" texuniform="true" texrepeat="5 5" reflectance="0.3"/>
-        </asset>
+            <asset>
+                <texture type="skybox" builtin="gradient" rgb1="1 1 1" rgb2="1 1 1" width="10" height="10"/>
+                <texture type="2d" name="groundplane" builtin="checker" mark="edge" rgb1="1 1 1" rgb2="1 1 1" markrgb="0 0 0" width="300" height="300"/>
+                <material name="groundplane" texture="groundplane" texuniform="true" texrepeat="5 5" reflectance="0.3"/>
+            </asset>
 
-        <worldbody>
-            <geom name="floor" size="5 5 0.01" type="plane" material="groundplane"/>
-            <light pos="0 0 3" diffuse="1 1 1" specular="1 1 1"/>
-        </worldbody>
-        </mujoco>
-        """
+            <worldbody>
+                <light pos="0 0 3" diffuse="1 1 1" specular="1 1 1"/>
+            </worldbody>
+            </mujoco>
+            """
+        else:
+            return """
+            <mujoco>
+            <visual>
+                <headlight diffuse=".5 .5 .5" specular="1 1 1"/>
+                <global elevation="-10" offwidth="2048" offheight="1536"/>
+                <quality shadowsize="8192"/>
+            </visual>
+
+            <asset>
+                <texture type="skybox" builtin="gradient" rgb1=".5 .5 .5" rgb2="0 0 0" width="10" height="10"/>
+                <texture type="2d" name="groundplane" builtin="checker" mark="edge" rgb1="1 1 1" rgb2="1 1 1" markrgb="0 0 0" width="300" height="300"/>
+                <material name="groundplane" texture="groundplane" texuniform="true" texrepeat="5 5" reflectance="0.3"/>
+            </asset>
+
+            <worldbody>
+                <geom name="floor" size="5 5 0.01" type="plane" material="groundplane"/>
+                <light pos="0 0 3" diffuse="1 1 1" specular="1 1 1"/>
+            </worldbody>
+            </mujoco>
+            """
 
     def _setup_world(self):
         """Add lighting and floor"""
@@ -430,7 +458,8 @@ def main(argv):
         hide_ligament=FLAGS.hide_ligament, 
         hide_tendon=FLAGS.hide_tendon, 
         hide_relay=FLAGS.hide_relay, 
-        hide_geom=FLAGS.hide_geom
+        hide_geom=FLAGS.hide_geom, 
+        hide_background=FLAGS.hide_background
         )
     spec = builder.build()
     spec.compiler.meshdir = f"{builder.config.assets_dir}"  # Set the mesh directory for the compiler
