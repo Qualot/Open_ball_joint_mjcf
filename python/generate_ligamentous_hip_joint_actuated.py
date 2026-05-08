@@ -10,6 +10,7 @@ flags.DEFINE_string('yaml_path', '../config/ligaments_max_pitch.yaml', 'Path to 
 flags.DEFINE_bool('hide_ligament', False, 'Hide the ligaments')
 flags.DEFINE_bool('hide_tendon', False, 'Hide the tendons')
 flags.DEFINE_bool('hide_relay', False, 'Hide the relay sites')
+flags.DEFINE_bool('hide_geom', False, 'Hide the geoms')
 
 
 @dataclass
@@ -47,12 +48,13 @@ class HipConfig:
     tendon_origin_points: np.ndarray = field(default_factory=lambda: np.array([]))
 
 class LigamentousHipBuilder:
-    def __init__(self, yaml_path=None, hide_ligament=False, hide_tendon=False, hide_relay=False):
+    def __init__(self, yaml_path=None, hide_ligament=False, hide_tendon=False, hide_relay=False, hide_geom=False):
         self.spec = mujoco.MjSpec.from_string(self._arena_xml())
         self.config = HipConfig()
         self.hide_ligament = hide_ligament
         self.hide_tendon = hide_tendon
         self.hide_relay = hide_relay
+        self.hide_geom = hide_geom
         self.spec.modelname = self.config.model_name
         # Storage for reuse
         self.relay_sites = []
@@ -91,6 +93,11 @@ class LigamentousHipBuilder:
         # 3. (Optional) Use them for motor tendons later
         self._set_tendon_origin_points()
         self._add_motor_tendons(pelvis_frame, link)
+
+        # 4. Set all geoms to have the same alpha if hide_geom is True        
+        if self.hide_geom: 
+            self._set_all_geoms_alpha(0.5)
+
         return self.spec
 
     def _set_defaults(self):
@@ -400,6 +407,18 @@ class LigamentousHipBuilder:
                 motor.ctrllimited = True
                 motor.ctrlrange = [-2000, 0]
 
+    def _set_all_geoms_alpha(self, alpha: float):
+            """
+            Iterate through all bodies and update the alpha channel of all geoms.
+            RGB values remain unchanged.
+            """
+            # derive all geoms recursively and update their rgba
+            for body in self.spec.bodies:
+                for geom in body.geoms:
+                    if geom.rgba is not None:
+                        current_rgba = list(geom.rgba)
+                        current_rgba[3] = alpha # Update only the alpha channel
+                        geom.rgba = current_rgba
 
 
 def main(argv):
@@ -410,7 +429,8 @@ def main(argv):
         yaml_path=FLAGS.yaml_path, 
         hide_ligament=FLAGS.hide_ligament, 
         hide_tendon=FLAGS.hide_tendon, 
-        hide_relay=FLAGS.hide_relay
+        hide_relay=FLAGS.hide_relay, 
+        hide_geom=FLAGS.hide_geom
         )
     spec = builder.build()
     spec.compiler.meshdir = f"{builder.config.assets_dir}"  # Set the mesh directory for the compiler
