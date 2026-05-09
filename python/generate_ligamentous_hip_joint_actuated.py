@@ -32,9 +32,11 @@ class HipConfig:
     socket_bottom_thickness: float = 0.01
     socket_sensor_thickness: float = 0.01
     socket_thickness_min: float = 0.003
+    socket_solref: np.ndarray = field(default_factory=lambda: np.array([0.002, 1]))
 
     # Femoral head ball parameters
     ball_diameter: float = 0.06
+    ball_solref: np.ndarray = field(default_factory=lambda: np.array([0.002, 1]))
     
     # Ligament parameters
     num_sites: int = 12
@@ -256,7 +258,8 @@ class LigamentousHipBuilder:
                     )
             socket_free_body.add_joint(name="socket_free_ignore", type=mujoco.mjtJoint.mjJNT_FREE)
             temp_frame = socket_free_body.add_frame(name="socket_attach_frame")
-            temp_frame.attach_body(socket_source, 'L_hip_', '')
+            new_socket_root = temp_frame.attach_body(socket_source, 'L_hip_', '')
+            self._set_solref_recursively(new_socket_root, self.config.socket_solref)
         else:
             # 2. Get the root body from the external spec
             # (Usually socket_spec.worldbody.bodies[0] is the body defined in the XML)
@@ -264,7 +267,8 @@ class LigamentousHipBuilder:
             
             # 3. Create a new body in our current spec and copy EVERYTHING from the source
             # This will copy geoms, child bodies, sites, etc.
-            socket_pos.attach_body(socket_source, 'L_hip_', '')  # Attach the new body to the frame for correct positioning
+            new_socket_root = socket_pos.attach_body(socket_source, 'L_hip_', '')  # Attach the new body to the frame for correct positioning
+            self._set_solref_recursively(new_socket_root, self.config.socket_solref)
             
             # Optional: If you want to change its position after copying
             # new_socket_body.pos = [0, 0, 0] 
@@ -298,7 +302,8 @@ class LigamentousHipBuilder:
         link_inclined.add_geom(name="tendon_insertion_geom", type=mujoco.mjtGeom.mjGEOM_CYLINDER, 
                       pos=[0, 0, -0.06], size=[r_ten_ins, 0.005], rgba=[.3, .3, .3, 1])
         link_inclined.add_geom(name="sphere", type=mujoco.mjtGeom.mjGEOM_SPHERE, size=[self.config.ball_diameter/2], 
-                      rgba=[0, .7, .7, 0.5], friction=[0.001, 0.001, 0.001])
+                      rgba=[0, .7, .7, 0.5], friction=[0.001, 0.001, 0.001], 
+                      solref=self.config.ball_solref)
         link_inclined.add_geom(name="short_cylinder", type=mujoco.mjtGeom.mjGEOM_CYLINDER, 
                       fromto=[0, 0, 0, 0, 0, -self.config.ball_diameter], size=[0.015], rgba=[0.7, 0.7, 0.7, 1])
 
@@ -453,6 +458,18 @@ class LigamentousHipBuilder:
                         current_rgba[3] = alpha # Update only the alpha channel
                         geom.rgba = current_rgba
 
+
+    def _set_solref_recursively(self, body, solref):
+        """
+        update solref of all geoms in a body and its child bodies
+        """
+        # update solref of all geoms in the current body
+        for geom in body.geoms:
+            geom.solref = solref
+        
+        # recursively update solref of all child bodies
+        for child_body in body.bodies:
+            self._set_solref_recursively(child_body, solref)
 
 def main(argv):
     del argv  # Unused
