@@ -11,6 +11,7 @@ flags.DEFINE_bool('hide_ligament', False, 'Hide the ligaments')
 flags.DEFINE_bool('hide_tendon', False, 'Hide the tendons')
 flags.DEFINE_bool('hide_relay', False, 'Hide the relay sites')
 flags.DEFINE_bool('hide_geom', False, 'Hide the geoms')
+flags.DEFINE_bool('hide_weight', False, 'Hide the weight')
 flags.DEFINE_bool('hide_background', False, 'Hide the background')
 
 
@@ -55,13 +56,15 @@ class LigamentousHipBuilder:
                  hide_tendon=False, 
                  hide_relay=False, 
                  hide_geom=False, 
-                 hide_background=False):
+                 hide_background=False,
+                 hide_weight=False):
         self.spec = mujoco.MjSpec.from_string(self._arena_xml(hide_background))
         self.config = HipConfig()
         self.hide_ligament = hide_ligament
         self.hide_tendon = hide_tendon
         self.hide_relay = hide_relay
         self.hide_geom = hide_geom
+        self.hide_weight = hide_weight
         self.spec.modelname = self.config.model_name
         # Storage for reuse
         self.relay_sites = []
@@ -103,6 +106,16 @@ class LigamentousHipBuilder:
         # 4. Set all geoms to have the same alpha if hide_geom is True        
         if self.hide_geom: 
             self._set_all_geoms_alpha(0.15)
+        
+        # 5. Set weight geom alpha to 0 if hide_weight is True
+        if self.hide_weight:
+            # Set weight geom alpha to 0
+            for body in self.spec.bodies:
+                for geom in body.geoms:
+                    if geom.name == "weight":
+                        current_rgba = list(geom.rgba)
+                        current_rgba[3] = 0.0 # Set alpha to 0
+                        geom.rgba = current_rgba
 
         return self.spec
 
@@ -451,6 +464,7 @@ def main(argv):
         hide_tendon=FLAGS.hide_tendon, 
         hide_relay=FLAGS.hide_relay, 
         hide_geom=FLAGS.hide_geom, 
+        hide_weight=FLAGS.hide_weight, 
         hide_background=FLAGS.hide_background
         )
     spec = builder.build()
