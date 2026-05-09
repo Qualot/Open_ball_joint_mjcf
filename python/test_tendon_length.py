@@ -281,8 +281,8 @@ def main(argv):
         # tester.test_forward(steps=FLAGS.forward_steps, interval=FLAGS.interval)
         
         # 3. Run the kinematics trajectory test
-        # angles, traj = generate_pitch_motion(tester, n_frames=200)
-        # angles, traj = generate_roll_motion(tester, n_frames=200)
+        # angles, traj = generate_pitch_motion(tester, n_frames=FLAGS.kinematics_frames)
+        # angles, traj = generate_roll_motion(tester, n_frames=FLAGS.kinematics_frames)
         angles, traj = generate_circumduction_motion(tester, n_frames=FLAGS.kinematics_frames)
 
         # tester.test_kinematics_trajectory(angles, traj)
