@@ -12,6 +12,7 @@ FLAGS = flags.FLAGS
 flags.DEFINE_string('xml_path', None, 'Path to the MuJoCo XML model file.')
 flags.DEFINE_integer('steps', 100, 'Number of simulation steps.')
 flags.DEFINE_integer('interval', 1, 'Logging interval (every N steps).')
+flags.DEFINE_bool('render_tendon', False, 'Render the tendons')
 
 flags.mark_flag_as_required('xml_path')
 
@@ -283,13 +284,13 @@ def main(argv):
         # angles, traj = generate_roll_motion(tester, n_frames=200)
         angles, traj = generate_circumduction_motion(tester, n_frames=200)
 
-        tester.test_kinematics_trajectory(angles, traj)
+        # tester.test_kinematics_trajectory(angles, traj)
 
         # Save from the left
-        # save_trajectory_video(tester, traj, filename="left_view.mp4", fps=30, azimuth=-90, render_tendons=False)
+        save_trajectory_video(tester, traj, filename="left_view.mp4", fps=30, azimuth=-90, render_tendons=FLAGS.render_tendon)
 
         # Save from the front
-        # save_trajectory_video(tester, traj, filename="front_view.mp4", fps=30, azimuth=180, render_tendons=False)
+        # save_trajectory_video(tester, traj, filename="front_view.mp4", fps=30, azimuth=180, render_tendons=FLAGS.render_tendon)
 
     except Exception as e:
         print(f"Error during testing: {e}", file=sys.stderr)
