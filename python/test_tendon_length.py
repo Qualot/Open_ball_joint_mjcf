@@ -11,6 +11,7 @@ import mediapy as media
 FLAGS = flags.FLAGS
 flags.DEFINE_string('xml_path', None, 'Path to the MuJoCo XML model file.')
 flags.DEFINE_integer('forward_steps', 100, 'Number of simulation steps.')
+flags.DEFINE_integer('kinematics_frames', 360, 'Number of kinematic frames.')
 flags.DEFINE_integer('interval', 1, 'Logging interval (every N steps).')
 flags.DEFINE_bool('render_tendon', False, 'Render the tendons')
 
@@ -282,7 +283,7 @@ def main(argv):
         # 3. Run the kinematics trajectory test
         # angles, traj = generate_pitch_motion(tester, n_frames=200)
         # angles, traj = generate_roll_motion(tester, n_frames=200)
-        angles, traj = generate_circumduction_motion(tester, n_frames=200)
+        angles, traj = generate_circumduction_motion(tester, n_frames=FLAGS.kinematics_frames)
 
         # tester.test_kinematics_trajectory(angles, traj)
 
