@@ -445,6 +445,14 @@ class LigamentousHipBuilder:
                 motor.ctrllimited = True
                 motor.ctrlrange = [-2000, 0]
 
+                # Adding tension sensor for the tendon
+                sensor_name = f"{tendon_name}"
+                sens = self.spec.add_sensor()
+                sens.name = sensor_name
+                sens.type = mujoco.mjtSensor.mjSENS_TENDONACTFRC
+                sens.objtype = mujoco.mjtObj.mjOBJ_TENDON
+                sens.objname = tendon_name
+
     def _set_all_geoms_alpha(self, alpha: float):
             """
             Iterate through all bodies and update the alpha channel of all geoms.
