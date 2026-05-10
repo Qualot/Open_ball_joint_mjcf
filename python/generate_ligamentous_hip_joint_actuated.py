@@ -374,6 +374,14 @@ class LigamentousHipBuilder:
                 ref_length = self.ligament_data.get(tendon_name, self.config.ligament_range[1])                
                 # spatial.range = [0, ref_length * 1.05]  # Allow some stretch beyond rest length
                 spatial.range = self.config.ligament_range
+
+                # Adding tension sensor for the ligaments
+                sensor_name = f"{tendon_name}"
+                sens = self.spec.add_sensor()
+                sens.name = sensor_name
+                sens.type = mujoco.mjtSensor.mjSENS_TENDONLIMITFRC
+                sens.objtype = mujoco.mjtObj.mjOBJ_TENDON
+                sens.objname = tendon_name
                 
 
     def _set_tendon_origin_points(self):
