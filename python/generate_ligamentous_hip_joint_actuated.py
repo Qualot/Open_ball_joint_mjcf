@@ -391,7 +391,7 @@ class LigamentousHipBuilder:
                               [0.03, 0.13+fs*1.5, -fs], [0, 0.13+fs*1.5, -fs], [-0.03, 0.13+fs*1.5, -fs], 
                               [-0.05-fs/2, 0.115+r_off, -0.045-r_off], [-0.05-fs/2, 0.08+r_off, -0.08-r_off], [-0.05-fs/2, 0.05+r_off, -0.11-r_off], 
                               [-0.03, fs, -0.13-fs], [0, fs, -0.13-fs], [0.03, fs, -0.13-fs], 
-                              [0.05+fs, 0.05, fs], [0.05+fs, 0.0825, fs], [0.05+fs, 0.115, fs]])
+                              [0.05+fs, 0.115, fs], [0.05+fs, 0.135, fs], [0.05+fs, 0.155, fs]])
     
 
     def _add_motor_tendons(self, origin_body, link_body):
