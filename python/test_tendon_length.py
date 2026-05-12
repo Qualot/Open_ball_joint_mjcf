@@ -160,7 +160,7 @@ def generate_roll_motion(tester, n_frames=200):
     return angles, trajectory
 
 
-def generate_circumduction_motion(tester, n_frames=200):
+def generate_circumduction_motion(tester, n_frames=200, log_output=False):
     """
     Tests tendon lengths during a circumduction motion.
     The joint axis rotates around a central axis defined by [0, 1, -1].
@@ -171,7 +171,8 @@ def generate_circumduction_motion(tester, n_frames=200):
 
     # 1. Define and normalize the central axis of the cone
     # Direction: [0, 1, -1]
-    center_axis = np.array([0.0, 1.0, -1.0])
+    theta = -np.pi/3
+    center_axis = np.array([np.cos(theta), np.cos(theta), np.sin(theta)])
     center_axis /= np.linalg.norm(center_axis)
 
     # 2. Define the initial vector (downward)
@@ -198,6 +199,13 @@ def generate_circumduction_motion(tester, n_frames=200):
         mujoco.mju_axisAngle2Quat(q_to_front, v_rotated, -t)
         mujoco.mju_mulQuat(q_final, q_to_front, q_mid)  # Apply q_to_front to the initial orientation
 
+        # 6. Convert quaternion to rotation matrix
+        res_mat = np.zeros(9)
+        mujoco.mju_quat2Mat(res_mat, q_final)
+
+        # 7. Convert rotation matrix to Euler angles
+        res_euler = np.zeros(3)
+        #mujoco.mju_mat2Euler(res_euler, res_mat, mujoco.mjtEuler.mjEULER_XYZ)
 
         current_qpos = initial_qpos.copy()
         # Assume qpos[3:7] is the quaternion (w, x, y, z)
@@ -205,6 +213,15 @@ def generate_circumduction_motion(tester, n_frames=200):
         
         angles[i] = t
         trajectory[i] = current_qpos
+        if log_output:
+            # print(f"Frame {i}: angle={t:.3f}, q_rot={q_rot}")
+            # print(f"Frame {i}: angle={t:.3f}, q_mid={q_mid}")
+            # print(f"Frame {i}: angle={t:.3f}, v_rotated={v_rotated}")
+            # print(f"Frame {i}: angle={t:.3f}, q_final={q_final}")
+            # print(f"Frame {i}: angle={t:.3f}, q_final={q_final}, v_rotated={v_rotated}")
+
+            if i%10 == 0:
+                print(f"Frame {i}: angle={t:.3f}, mat={res_mat}")
 
     return angles, trajectory
 
@@ -283,12 +300,12 @@ def main(argv):
         # 3. Run the kinematics trajectory test
         # angles, traj = generate_pitch_motion(tester, n_frames=FLAGS.kinematics_frames)
         # angles, traj = generate_roll_motion(tester, n_frames=FLAGS.kinematics_frames)
-        angles, traj = generate_circumduction_motion(tester, n_frames=FLAGS.kinematics_frames)
+        angles, traj = generate_circumduction_motion(tester, n_frames=FLAGS.kinematics_frames, log_output=True)
 
         # tester.test_kinematics_trajectory(angles, traj)
 
         # Save from the left
-        save_trajectory_video(tester, traj, filename="left_view.mp4", fps=30, azimuth=-90, render_tendon=FLAGS.render_tendon)
+        # save_trajectory_video(tester, traj, filename="left_view.mp4", fps=30, azimuth=-90, render_tendon=FLAGS.render_tendon)
 
         # Save from the front
         # save_trajectory_video(tester, traj, filename="front_view.mp4", fps=30, azimuth=180, render_tendon=FLAGS.render_tendon)
