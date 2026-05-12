@@ -170,9 +170,9 @@ def generate_circumduction_motion(tester, n_frames=200, log_output=False):
     initial_qpos = tester.data.qpos.copy()
 
     # 1. Define and normalize the central axis of the cone
-    # Direction: [0, 1, -1]
-    theta = -np.pi/3
-    center_axis = np.array([np.cos(theta), np.cos(theta), np.sin(theta)])
+    theta = np.pi * 5 / 6
+    phi = np.pi / 6
+    center_axis = np.array([np.sin(theta) * np.cos(phi), np.sin(theta) * np.sin(phi), np.cos(theta)])
     center_axis /= np.linalg.norm(center_axis)
 
     # 2. Define the initial vector (downward)
@@ -219,9 +219,9 @@ def generate_circumduction_motion(tester, n_frames=200, log_output=False):
             # print(f"Frame {i}: angle={t:.3f}, v_rotated={v_rotated}")
             # print(f"Frame {i}: angle={t:.3f}, q_final={q_final}")
             # print(f"Frame {i}: angle={t:.3f}, q_final={q_final}, v_rotated={v_rotated}")
-
-            if i%10 == 0:
-                print(f"Frame {i}: angle={t:.3f}, mat={res_mat}")
+            # if i%10 == 0:
+            #     print(f"Frame {i}: angle={t:.3f}, mat={res_mat}")
+            pass
 
     return angles, trajectory
 
