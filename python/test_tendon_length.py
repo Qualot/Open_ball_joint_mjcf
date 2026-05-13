@@ -102,7 +102,7 @@ class TendonTester:
             return log, np.array(length_list)
 
 
-def generate_pitch_motion(tester, n_frames=200):
+def generate_pitch_motion(tester, n_frames=200, log_output=False):
     """
     Generate a pitch motion trajectory for testing tendon lengths.
     This is a basic sanity check to see if tendon lengths change as expected.
@@ -132,7 +132,7 @@ def generate_pitch_motion(tester, n_frames=200):
     return angles, trajectory
 
 
-def generate_roll_motion(tester, n_frames=200):
+def generate_roll_motion(tester, n_frames=200, log_output=False):
     """
     Generate a roll motion trajectory for testing tendon lengths.
     """
