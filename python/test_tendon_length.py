@@ -1,3 +1,5 @@
+from asyncio import log
+
 import mujoco
 import numpy as np
 import os
@@ -70,9 +72,9 @@ class TendonTester:
                 angles (np.ndarray): An array of joint angles for each frame.
                 trajectory (np.ndarray): A 2D array where each row is a qpos vector.
             """
-            # Print CSV Header
-            header = "frame," + "angle," + ",".join([f"qpos{i}" for i in range(self.model.nq)]) + "," + ",".join(self.tendon_names)
-            print(header)
+
+            log = []
+            length_list = []
 
             for frame, qpos in enumerate(trajectory):
                 # 1. Set the joint positions directly
@@ -93,7 +95,11 @@ class TendonTester:
                 # 4. Format and print
                 lengths = [f"{self.data.ten_length[i]:.6f}" for i in range(self.model.ntendon)]
                 #print(f"{frame}," + f"{qpos}," + ",".join(lengths))
-                print(f"{frame}," + f"{angles[frame]:.6f}," + ",".join([f"{x:.6f}" for x in qpos]) + "," + ",".join(lengths))
+                #print(f"{frame}," + f"{angles[frame]:.6f}," + ",".join([f"{x:.6f}" for x in qpos]) + "," + ",".join(lengths))
+                log.append((frame, angles[frame], qpos, lengths))
+                length_list.append(self.data.ten_length.copy())
+
+            return log, np.array(length_list)
 
 
 def generate_pitch_motion(tester, n_frames=200):
@@ -287,6 +293,17 @@ def save_trajectory_video(tester, trajectory, filename="circumduction.mp4",
     print(f"Video saved successfully: {filename}")
 
 
+def print_log(tester, log):
+        # Print CSV Header
+        header = "frame," + "angle," + ",".join([f"qpos{i}" for i in range(tester.model.nq)]) + "," + ",".join(tester.tendon_names)
+
+        print(header)
+        for frame, angle, qpos, lengths in log:
+            qpos_str = ",".join([f"{x:.6f}" for x in qpos])
+            lengths_str = ",".join(lengths)            
+            print(f"{frame},{angle:.6f},{qpos_str},{lengths_str}")
+
+
 def main(argv):
     del argv 
 
@@ -302,7 +319,11 @@ def main(argv):
         # angles, traj = generate_roll_motion(tester, n_frames=FLAGS.kinematics_frames)
         angles, traj = generate_circumduction_motion(tester, n_frames=FLAGS.kinematics_frames, log_output=True)
 
-        # tester.test_kinematics_trajectory(angles, traj)
+        log, length_list = tester.test_kinematics_trajectory(angles, traj)
+ 
+        print_log(tester, log)
+        #print(length_list)
+
 
         # Save from the left
         # save_trajectory_video(tester, traj, filename="left_view.mp4", fps=30, azimuth=-90, render_tendon=FLAGS.render_tendon)
