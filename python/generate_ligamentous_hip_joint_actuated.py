@@ -6,7 +6,7 @@ from absl import app, flags
 
 #flags
 FLAGS = flags.FLAGS
-flags.DEFINE_string('yaml_path', '../config/ligaments_max_pitch.yaml', 'Path to the ligament config yaml')
+flags.DEFINE_string('yaml_path', '../config/ligament_max_all.yaml', 'Path to the ligament config yaml')
 flags.DEFINE_bool('hide_ligament', False, 'Hide the ligaments')
 flags.DEFINE_bool('hide_tendon', False, 'Hide the tendons')
 flags.DEFINE_bool('hide_relay', False, 'Hide the relay sites')
@@ -376,8 +376,8 @@ class LigamentousHipBuilder:
                 spatial.limited = True
 
                 ref_length = self.ligament_data.get(tendon_name, self.config.ligament_range[1])                
-                # spatial.range = [0, ref_length * 1.05]  # Allow some stretch beyond rest length
-                spatial.range = self.config.ligament_range
+                spatial.range = [0, ref_length * 1.05]  # Allow some stretch beyond rest length
+                # spatial.range = self.config.ligament_range
 
                 # Adding tension sensor for the ligaments
                 sensor_name = f"{tendon_name}"
