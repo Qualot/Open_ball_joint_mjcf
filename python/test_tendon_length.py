@@ -8,6 +8,7 @@ from absl import app
 from absl import flags
 from absl import logging
 import mediapy as media 
+import yaml
 
 # --- 1. Define Flags ---
 FLAGS = flags.FLAGS
@@ -294,6 +295,9 @@ def save_trajectory_video(tester, trajectory, filename="circumduction.mp4",
 
 
 def print_log(tester, log):
+        """
+        Utility function to print the log in CSV format.
+        """
         # Print CSV Header
         header = "frame," + "angle," + ",".join([f"qpos{i}" for i in range(tester.model.nq)]) + "," + ",".join(tester.tendon_names)
 
@@ -303,6 +307,28 @@ def print_log(tester, log):
             lengths_str = ",".join(lengths)            
             print(f"{frame},{angle:.6f},{qpos_str},{lengths_str}")
 
+def get_max_ligament_length(tester, output_yaml=False):
+    """
+    Utility function to compute and print the maximum ligament lengths across multiple motions.
+    This can be used to determine the necessary ligament lengths for the model.
+    """
+    motions = ["roll", "pitch", "circumduction"]
+    tmp = []
+    for motion in motions:
+        angles, traj = eval(f'generate_{motion}_motion(tester, n_frames=FLAGS.kinematics_frames, log_output=True)')
+        _, length_each_motion = tester.test_kinematics_trajectory(angles, traj)
+        print(f"Motion: {motion}, Ligament Lengths Shape: {length_each_motion.shape}")
+        tmp.append(length_each_motion)
+    length_all_motions = np.concatenate(tmp, axis=0)
+    print(f"All Motions - Shape: {length_all_motions.shape}")
+    print(f"All Motions - Max Lengths: {length_all_motions.max(axis=0)}")
+
+    if output_yaml:
+        max_lengths = length_all_motions.max(axis=0)
+        ligament_length_dict = {tester.tendon_names[i]: float(max_lengths[i]) for i in range(tester.model.ntendon)}
+        with open("../config/ligament_max_all.yaml", "w") as f:
+            yaml.dump(ligament_length_dict, f)
+        print("Max ligament lengths saved to ligament_max_all.yaml")
 
 def main(argv):
     del argv 
@@ -319,11 +345,12 @@ def main(argv):
         # angles, traj = generate_roll_motion(tester, n_frames=FLAGS.kinematics_frames)
         angles, traj = generate_circumduction_motion(tester, n_frames=FLAGS.kinematics_frames, log_output=True)
 
-        log, length_list = tester.test_kinematics_trajectory(angles, traj)
- 
-        print_log(tester, log)
-        #print(length_list)
+        # kinematics trajectory test to get .csv
+        # log, _ = tester.test_kinematics_trajectory(angles, traj) 
+        # print_log(tester, log) 
 
+        # get max ligament length to get .yaml
+        get_max_ligament_length(tester, output_yaml=False)
 
         # Save from the left
         # save_trajectory_video(tester, traj, filename="left_view.mp4", fps=30, azimuth=-90, render_tendon=FLAGS.render_tendon)
